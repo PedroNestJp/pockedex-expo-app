@@ -23,4 +23,11 @@ export class PokeApiDataSource {
     );
     return data;
   }
+
+  async fetchByNameOrId(nameOrId: string) {
+    const { data } = await axios.get<PokemonDetails>(
+      `https://pokeapi.co/api/v2/pokemon/${nameOrId.toLowerCase()}`
+    );
+    return data;
+  }
 }
