@@ -8,5 +8,6 @@ export const globalStyles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+    fontWeight: "600",
   },
 });
