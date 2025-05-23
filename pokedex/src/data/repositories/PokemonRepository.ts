@@ -22,7 +22,6 @@ export class PokemonRepository {
     return this.api.fetchById(id);
   }
 
-  // dentro de class PokemonRepository
   async getPokemonByNameOrId(nameOrId: string): Promise<Pokemon> {
     const details = await this.api.fetchByNameOrId(nameOrId);
     return {
@@ -30,5 +29,10 @@ export class PokemonRepository {
       name: details.name,
       image: details.sprites.front_default,
     };
+  }
+
+  async getTypes(): Promise<string[]> {
+    const types = await this.api.fetchTypes();
+    return types.map((t) => t.name);
   }
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
-import type { Pokemon } from "../../domain/models/Pokemon";
 import { PokemonDetails } from "../../domain/models/PokemonDetails";
+import { PokemonWithTypes } from "../../domain/models/PokemonWithTypes";
 
 interface PokeApiListResponse {
   count: number;
@@ -29,5 +29,12 @@ export class PokeApiDataSource {
       `https://pokeapi.co/api/v2/pokemon/${nameOrId.toLowerCase()}`
     );
     return data;
+  }
+
+  async fetchTypes(): Promise<PokemonWithTypes[]> {
+    const { data } = await axios.get<{ results: PokemonWithTypes[] }>(
+      `https://pokeapi.co/api/v2/type`
+    );
+    return data.results;
   }
 }
