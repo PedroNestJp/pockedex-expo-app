@@ -1,11 +1,10 @@
-
-import { Text, View } from 'react-native';
+import { View, Text } from "react-native";
+import { globalStyles } from "../src/theme/styles";
 
 export default function HomeScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Pokédex Home</Text>
+    <View style={globalStyles.center}>
+      <Text style={globalStyles.title}>Pokédex Home</Text>
     </View>
   );
 }
-
