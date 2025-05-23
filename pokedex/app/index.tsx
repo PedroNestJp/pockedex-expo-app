@@ -44,7 +44,7 @@ export default function PokemonListScreen() {
 
   const { data, isLoading, isError } = useQuery<Pokemon[]>({
     queryKey: ["pokemons", 0],
-    queryFn: () => repo.getPokemons(0, 20),
+    queryFn: () => repo.getPokemons(0, 151),
   });
 
   if (isLoading) {
@@ -67,7 +67,7 @@ export default function PokemonListScreen() {
   const displayData = search.length > 0 && searched ? [searched] : data;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingVertical: 32 }}>
       <SearchBar value={search} onChangeText={setSearch} />
       <Link href="/favorites" style={styles.link}>
         <Text>Ver Favoritos</Text>

@@ -5,7 +5,7 @@ import { PokemonDetails } from "../../domain/models/PokemonDetails";
 export class PokemonRepository {
   private api = new PokeApiDataSource();
 
-  async getPokemons(offset = 0, limit = 20): Promise<Pokemon[]> {
+  async getPokemons(offset = 0, limit = 151): Promise<Pokemon[]> {
     const list = await this.api.fetchList(offset, limit);
     return list.results.map((item) => {
       const parts = item.url.split("/").filter(Boolean);
@@ -22,7 +22,6 @@ export class PokemonRepository {
     return this.api.fetchById(id);
   }
 
-  // dentro de class PokemonRepository
   async getPokemonByNameOrId(nameOrId: string): Promise<Pokemon> {
     const details = await this.api.fetchByNameOrId(nameOrId);
     return {
@@ -30,5 +29,10 @@ export class PokemonRepository {
       name: details.name,
       image: details.sprites.front_default,
     };
+  }
+
+  async getTypes(): Promise<string[]> {
+    const types = await this.api.fetchTypes();
+    return types.map((t) => t.name);
   }
 }
