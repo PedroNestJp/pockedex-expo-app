@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { globalStyles } from "../src/theme/styles";
 import { PokemonRepository } from "../src/data/repositories/PokemonRepository";
 import type { Pokemon } from "../src/domain/models/Pokemon";
+import { Link } from "expo-router";
 
 const repo = new PokemonRepository();
 
@@ -43,7 +44,9 @@ export default function PokemonListScreen() {
       renderItem={({ item }) => (
         <View style={styles.card}>
           <Image source={{ uri: item.image }} style={styles.image} />
-          <Text style={styles.name}>{item.name}</Text>
+          <Link href={`/${item.id}`}>
+            <Text style={styles.name}>{item.name}</Text>
+          </Link>
         </View>
       )}
     />
