@@ -1,119 +1,131 @@
-// app/index.tsx
 import React, { useState } from "react";
 import {
   View,
   Text,
   FlatList,
-  Image,
   ActivityIndicator,
   StyleSheet,
-  SafeAreaView,
 } from "react-native";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "expo-router";
-
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { globalStyles } from "../src/theme/styles";
 import { PokemonRepository } from "../src/data/repositories/PokemonRepository";
 import type { Pokemon } from "../src/domain/models/Pokemon";
+import { Link } from "expo-router";
 import { SearchBar } from "../src/components/SearchBar";
+import { FavoriteRepository } from "../src/data/repositories/FavoriteRepository";
+import { PokemonCard } from "../src/components/PokemonCard";
 
 const repo = new PokemonRepository();
+const favRepo = new FavoriteRepository();
 
 export default function PokemonListScreen() {
   const [search, setSearch] = useState("");
+  const queryClient = useQueryClient(); // Movido para dentro do componente
 
-  // 1) Busca (dispara se houver texto)
+  const { data: favorites = [] } = useQuery<Pokemon[]>({
+    queryKey: ["favorites"], // Usar objeto para consistência
+    queryFn: () => favRepo.getFavorites(),
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: (p: Pokemon) => favRepo.toggleFavorite(p),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }), // Usar objeto
+  });
+
   const {
-    data: searchResult,
+    data: searched,
     isLoading: isSearching,
     isError: isSearchError,
-  } = useQuery<Pokemon, Error>({
+  } = useQuery<Pokemon | undefined>({
     queryKey: ["search", search],
     queryFn: () => repo.getPokemonByNameOrId(search),
     enabled: search.length > 0,
   });
 
-  // 2) Listagem da 1ª geração
-  const {
-    data: list,
-    isLoading: isListLoading,
-    isError: isListError,
-  } = useQuery<Pokemon[], Error>({
+  const { data, isLoading, isError } = useQuery<Pokemon[]>({
     queryKey: ["pokemons", 0],
     queryFn: () => repo.getPokemons(0, 20),
   });
 
-  // 3) Composições de estado
-  const isLoading = isListLoading || isSearching;
-  const isError =
-    (isListError && search.length === 0) ||
-    (isSearchError && search.length > 0);
+  if (isLoading) {
+    return (
+      <View style={globalStyles.containerCenter}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
-  // 4) Dados a exibir
-  const pokemonsToShow =
-    search.length > 0 ? (searchResult ? [searchResult] : []) : list ?? [];
+  if (isError || !data) {
+    return (
+      <View style={globalStyles.containerCenter}>
+        <Text>Erro ao carregar Pokémons.</Text>
+      </View>
+    );
+  }
+
+  // Determinar quais dados mostrar: resultado da busca ou lista principal
+  const displayData = search.length > 0 && searched ? [searched] : data;
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/*  Sempre visível */}
+    <View style={{ flex: 1 }}>
       <SearchBar value={search} onChangeText={setSearch} />
+      <Link href="/favorites" style={styles.link}>
+        <Text>Ver Favoritos</Text>
+      </Link>
 
-      <View style={styles.content}>
-        {isLoading ? (
-          <ActivityIndicator size="large" />
-        ) : isError ? (
-          <Text>Erro ao carregar Pokémons.</Text>
-        ) : pokemonsToShow.length === 0 && search.length > 0 ? (
-          <Text>Nenhum Pokémon encontrado.</Text>
-        ) : (
-          <FlatList
-            data={pokemonsToShow}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={styles.list}
-            renderItem={({ item }) => (
-              <Link href={`/${item.id}`}>
-                <View style={styles.card}>
-                  <Image source={{ uri: item.image }} style={styles.image} />
-                  <Text style={styles.name}>{item.name}</Text>
-                </View>
-              </Link>
-            )}
-          />
-        )}
-      </View>
-    </SafeAreaView>
+      {/* Mostrar loading da busca quando apropriado */}
+      {isSearching && (
+        <View style={styles.searchLoading}>
+          <ActivityIndicator size="small" />
+          <Text>Buscando...</Text>
+        </View>
+      )}
+
+      {/* Mostrar erro de busca quando apropriado */}
+      {isSearchError && search.length > 0 && (
+        <View style={styles.searchError}>
+          <Text>Pokémon não encontrado</Text>
+        </View>
+      )}
+
+      <FlatList
+        data={displayData}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) => {
+          const isFav = favorites.some((p) => p.id === item.id);
+          return (
+            <PokemonCard
+              pokemon={item}
+              isFavorite={isFav}
+              onToggle={toggleMutation.mutate}
+            />
+          );
+        }}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 16,
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 16,
-  },
   list: {
     paddingVertical: 8,
   },
-  card: {
+  link: {
+    padding: 12,
+    textAlign: "center",
+    backgroundColor: "#EEE",
+  },
+  searchLoading: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     padding: 12,
-    borderBottomWidth: 1,
-    borderColor: "#DDD",
   },
-  image: {
-    width: 56,
-    height: 56,
-    marginRight: 12,
+  searchError: {
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#FFE6E6",
   },
-  name: {
-    fontSize: 18,
-    fontWeight: "500",
-    textTransform: "capitalize",
-  },
+  // Removidos estilos não utilizados (card, image, name)
 });
