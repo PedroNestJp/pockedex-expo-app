@@ -5,7 +5,7 @@ import { PokemonDetails } from "../../domain/models/PokemonDetails";
 export class PokemonRepository {
   private api = new PokeApiDataSource();
 
-  async getPokemons(offset = 0, limit = 20): Promise<Pokemon[]> {
+  async getPokemons(offset = 0, limit = 151): Promise<Pokemon[]> {
     const list = await this.api.fetchList(offset, limit);
     return list.results.map((item) => {
       const parts = item.url.split("/").filter(Boolean);

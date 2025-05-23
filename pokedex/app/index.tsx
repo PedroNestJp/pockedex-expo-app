@@ -44,7 +44,7 @@ export default function PokemonListScreen() {
 
   const { data, isLoading, isError } = useQuery<Pokemon[]>({
     queryKey: ["pokemons", 0],
-    queryFn: () => repo.getPokemons(0, 20),
+    queryFn: () => repo.getPokemons(0, 151),
   });
 
   if (isLoading) {

@@ -60,19 +60,25 @@ export default function FavoritesScreen() {
   ).map(([title, data]) => ({ title, data }));
 
   return (
-    <SectionList
-      sections={sections}
-      keyExtractor={(item) => item.id.toString()}
-      renderSectionHeader={({ section: { title } }) => (
-        <View style={styles.header}>
-          <Text style={styles.headerText}>{title.toUpperCase()}</Text>
-        </View>
-      )}
-      renderItem={({ item }) => (
-        <PokemonCard pokemon={item} isFavorite onToggle={() => {}} />
-      )}
-      contentContainerStyle={styles.list}
-    />
+    <View style={{ flex: 1, paddingVertical: 32 }}>
+      {/* Header de favoritos */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Pokémons Favoritos</Text>
+      </View>
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.id.toString()}
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={styles.header}>
+            <Text style={styles.headerText}>{title.toUpperCase()}</Text>
+          </View>
+        )}
+        renderItem={({ item }) => (
+          <PokemonCard pokemon={item} isFavorite onToggle={() => {}} />
+        )}
+        contentContainerStyle={styles.list}
+      />
+    </View>
   );
 }
 
