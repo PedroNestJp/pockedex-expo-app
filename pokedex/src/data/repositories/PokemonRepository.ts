@@ -1,5 +1,6 @@
 import { PokeApiDataSource } from "../datasources/PokeApiDataSource";
 import type { Pokemon } from "../../domain/models/Pokemon";
+import { PokemonDetails } from "../../domain/models/PokemonDetails";
 
 export class PokemonRepository {
   private api = new PokeApiDataSource();
@@ -15,5 +16,9 @@ export class PokemonRepository {
         image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`,
       } as Pokemon;
     });
+  }
+
+  async getPokemonById(id: number): Promise<PokemonDetails> {
+    return this.api.fetchById(id);
   }
 }
