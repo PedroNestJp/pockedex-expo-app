@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// app/index.tsx
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -7,55 +8,88 @@ import {
   StyleSheet,
 } from "react-native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "expo-router";
+
 import { globalStyles } from "../src/theme/styles";
 import { PokemonRepository } from "../src/data/repositories/PokemonRepository";
+import { PokemonService } from "../src/services/PokemonService";
 import type { Pokemon } from "../src/domain/models/Pokemon";
-import { Link } from "expo-router";
-import { SearchBar } from "../src/components/SearchBar";
 import { FavoriteRepository } from "../src/data/repositories/FavoriteRepository";
 import { PokemonCard } from "../src/components/PokemonCard";
+import { SearchBar } from "../src/components/SearchBar";
+import { useNotifications } from "../src/context/NotificationsContext";
 
-const repo = new PokemonRepository();
+const mainRepo = new PokemonRepository();
+const service = new PokemonService();
 const favRepo = new FavoriteRepository();
 
 export default function PokemonListScreen() {
   const [search, setSearch] = useState("");
-  const queryClient = useQueryClient(); // Movido para dentro do componente
+  const queryClient = useQueryClient();
+  const { notifyNearby } = useNotifications();
+  const hasNotifiedRef = useRef(false);
 
-  const { data: favorites = [] } = useQuery<Pokemon[]>({
-    queryKey: ["favorites"], // Usar objeto para consistência
+  // Favoritos
+  const { data: favorites = [] } = useQuery<Pokemon[], Error>({
+    queryKey: ["favorites"],
     queryFn: () => favRepo.getFavorites(),
   });
-
   const toggleMutation = useMutation({
     mutationFn: (p: Pokemon) => favRepo.toggleFavorite(p),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }), // Usar objeto
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }),
   });
 
+  // Busca por nome ou número
   const {
     data: searched,
     isLoading: isSearching,
     isError: isSearchError,
-  } = useQuery<Pokemon | undefined>({
+  } = useQuery<Pokemon, Error>({
     queryKey: ["search", search],
-    queryFn: () => repo.getPokemonByNameOrId(search),
+    queryFn: () => mainRepo.getPokemonByNameOrId(search),
     enabled: search.length > 0,
   });
 
-  const { data, isLoading, isError } = useQuery<Pokemon[]>({
+  // Listagem completa
+  const {
+    data: allPokemons,
+    isLoading: isLoadingAll,
+    isError: isErrorAll,
+  } = useQuery<Pokemon[], Error>({
     queryKey: ["pokemons", 0],
-    queryFn: () => repo.getPokemons(0, 151),
+    queryFn: () => mainRepo.getPokemons(0, 151),
   });
 
-  if (isLoading) {
+  // Pokémons por perto
+  const {
+    data: nearby = [],
+    isFetching: isFetchingNearby,
+    isError: isErrorNearby,
+  } = useQuery<Pokemon[], Error, Pokemon[]>({
+    queryKey: ["nearby"],
+    queryFn: () => service.getRandomPokemons(3),
+    refetchInterval: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (nearby.length > 0) {
+      if (hasNotifiedRef.current) {
+        notifyNearby(nearby.map((p) => p.name));
+      } else {
+        hasNotifiedRef.current = true;
+      }
+    }
+  }, [nearby, notifyNearby]);
+
+  // Estados de loading/erro iniciais
+  if (isLoadingAll) {
     return (
       <View style={globalStyles.containerCenter}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
-
-  if (isError || !data) {
+  if (isErrorAll || !allPokemons) {
     return (
       <View style={globalStyles.containerCenter}>
         <Text>Erro ao carregar Pokémons.</Text>
@@ -63,28 +97,50 @@ export default function PokemonListScreen() {
     );
   }
 
-  // Determinar quais dados mostrar: resultado da busca ou lista principal
-  const displayData = search.length > 0 && searched ? [searched] : data;
+  const displayData =
+    search.length > 0 ? (searched ? [searched] : []) : allPokemons;
 
   return (
-    <View style={{ flex: 1, paddingVertical: 32 }}>
+    <View style={styles.screen}>
       <SearchBar value={search} onChangeText={setSearch} />
-      <Link href="/favorites" style={styles.link}>
+      <Link href="/favorites" style={styles.favLink}>
         <Text>Ver Favoritos</Text>
       </Link>
 
-      {/* Mostrar loading da busca quando apropriado */}
+      <View style={styles.nearbySection}>
+        <Text style={styles.sectionTitle}>Pokémons por perto</Text>
+        {isFetchingNearby && <ActivityIndicator style={styles.nearbyLoader} />}
+        {isErrorNearby && (
+          <Text style={styles.nearbyError}>
+            Não foi possível carregar os Pokémons por perto.
+          </Text>
+        )}
+        {!isFetchingNearby && !isErrorNearby && (
+          <FlatList
+            horizontal
+            data={nearby}
+            keyExtractor={(p) => p.id.toString()}
+            renderItem={({ item }) => (
+              <PokemonCard
+                pokemon={item}
+                isFavorite={favorites.some((f) => f.id === item.id)}
+                onToggle={toggleMutation.mutate}
+              />
+            )}
+            showsHorizontalScrollIndicator={false}
+          />
+        )}
+      </View>
+
       {isSearching && (
-        <View style={styles.searchLoading}>
+        <View style={styles.searchFeedback}>
           <ActivityIndicator size="small" />
-          <Text>Buscando...</Text>
+          <Text style={styles.searchText}>Buscando...</Text>
         </View>
       )}
-
-      {/* Mostrar erro de busca quando apropriado */}
       {isSearchError && search.length > 0 && (
-        <View style={styles.searchError}>
-          <Text>Pokémon não encontrado</Text>
+        <View style={styles.searchFeedback}>
+          <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
         </View>
       )}
 
@@ -93,7 +149,7 @@ export default function PokemonListScreen() {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => {
-          const isFav = favorites.some((p) => p.id === item.id);
+          const isFav = favorites.some((f) => f.id === item.id);
           return (
             <PokemonCard
               pokemon={item}
@@ -108,24 +164,48 @@ export default function PokemonListScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: {
-    paddingVertical: 8,
+  screen: {
+    flex: 1,
+    paddingVertical: 16,
   },
-  link: {
+  favLink: {
     padding: 12,
-    textAlign: "center",
     backgroundColor: "#EEE",
+    textAlign: "center",
+    marginHorizontal: 16,
+    borderRadius: 8,
   },
-  searchLoading: {
+  nearbySection: {
+    marginVertical: 16,
+    marginLeft: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  nearbyLoader: {
+    marginVertical: 8,
+  },
+  nearbyError: {
+    color: "#b00020",
+    textAlign: "center",
+    marginVertical: 8,
+  },
+  searchFeedback: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    padding: 12,
+    marginVertical: 8,
   },
-  searchError: {
-    alignItems: "center",
-    padding: 12,
-    backgroundColor: "#FFE6E6",
+  searchText: {
+    marginLeft: 8,
   },
-  // Removidos estilos não utilizados (card, image, name)
+  searchErrorText: {
+    color: "#b00020",
+  },
+  list: {
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+  },
 });
