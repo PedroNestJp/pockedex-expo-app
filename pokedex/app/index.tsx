@@ -1,5 +1,5 @@
 // app/index.tsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,22 +12,18 @@ import { Link } from "expo-router";
 
 import { globalStyles } from "../src/theme/styles";
 import { PokemonRepository } from "../src/data/repositories/PokemonRepository";
-import { PokemonService } from "../src/services/PokemonService";
-import type { Pokemon } from "../src/domain/models/Pokemon";
 import { FavoriteRepository } from "../src/data/repositories/FavoriteRepository";
+import type { Pokemon } from "../src/domain/models/Pokemon";
 import { PokemonCard } from "../src/components/PokemonCard";
 import { SearchBar } from "../src/components/SearchBar";
-import { useNotifications } from "../src/context/NotificationsContext";
+import { useNearbyPokemons } from "../src/hooks/useNearbyPokemons";
 
-const mainRepo = new PokemonRepository();
-const service = new PokemonService();
+const repo = new PokemonRepository();
 const favRepo = new FavoriteRepository();
 
 export default function PokemonListScreen() {
   const [search, setSearch] = useState("");
   const queryClient = useQueryClient();
-  const { notifyNearby } = useNotifications();
-  const hasNotifiedRef = useRef(false);
 
   // Favoritos
   const { data: favorites = [] } = useQuery<Pokemon[], Error>({
@@ -46,7 +42,7 @@ export default function PokemonListScreen() {
     isError: isSearchError,
   } = useQuery<Pokemon, Error>({
     queryKey: ["search", search],
-    queryFn: () => mainRepo.getPokemonByNameOrId(search),
+    queryFn: () => repo.getPokemonByNameOrId(search),
     enabled: search.length > 0,
   });
 
@@ -57,31 +53,18 @@ export default function PokemonListScreen() {
     isError: isErrorAll,
   } = useQuery<Pokemon[], Error>({
     queryKey: ["pokemons", 0],
-    queryFn: () => mainRepo.getPokemons(0, 151),
+    queryFn: () => repo.getPokemons(0, 151),
   });
 
-  // Pokémons por perto
+  // Pokémons por perto via hook customizado
   const {
-    data: nearby = [],
+    pokemons: nearby,
     isFetching: isFetchingNearby,
     isError: isErrorNearby,
-  } = useQuery<Pokemon[], Error, Pokemon[]>({
-    queryKey: ["nearby"],
-    queryFn: () => service.getRandomPokemons(3),
-    refetchInterval: 5 * 60 * 1000,
-  });
+    refetch: refetchNearby,
+  } = useNearbyPokemons(3);
 
-  useEffect(() => {
-    if (nearby.length > 0) {
-      if (hasNotifiedRef.current) {
-        notifyNearby(nearby.map((p) => p.name));
-      } else {
-        hasNotifiedRef.current = true;
-      }
-    }
-  }, [nearby, notifyNearby]);
-
-  // Estados de loading/erro iniciais
+  // Estados iniciais de loading/erro
   if (isLoadingAll) {
     return (
       <View style={globalStyles.containerCenter}>
@@ -97,6 +80,7 @@ export default function PokemonListScreen() {
     );
   }
 
+  // Dados a exibir: busca ou lista principal
   const displayData =
     search.length > 0 ? (searched ? [searched] : []) : allPokemons;
 
@@ -111,9 +95,14 @@ export default function PokemonListScreen() {
         <Text style={styles.sectionTitle}>Pokémons por perto</Text>
         {isFetchingNearby && <ActivityIndicator style={styles.nearbyLoader} />}
         {isErrorNearby && (
-          <Text style={styles.nearbyError}>
-            Não foi possível carregar os Pokémons por perto.
-          </Text>
+          <View style={styles.nearbyErrorContainer}>
+            <Text style={styles.nearbyErrorText}>
+              Erro ao carregar pokémons por perto
+            </Text>
+            <Text onPress={() => refetchNearby()} style={styles.retryText}>
+              Tentar novamente
+            </Text>
+          </View>
         )}
         {!isFetchingNearby && !isErrorNearby && (
           <FlatList
@@ -128,6 +117,8 @@ export default function PokemonListScreen() {
               />
             )}
             showsHorizontalScrollIndicator={false}
+            onRefresh={refetchNearby}
+            refreshing={isFetchingNearby}
           />
         )}
       </View>
@@ -158,6 +149,10 @@ export default function PokemonListScreen() {
             />
           );
         }}
+        onRefresh={() =>
+          queryClient.invalidateQueries({ queryKey: ["pokemons", 0] })
+        }
+        refreshing={isLoadingAll}
       />
     </View>
   );
@@ -187,10 +182,18 @@ const styles = StyleSheet.create({
   nearbyLoader: {
     marginVertical: 8,
   },
-  nearbyError: {
+  nearbyErrorContainer: {
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#FDECEA",
+    marginBottom: 8,
+  },
+  nearbyErrorText: {
     color: "#b00020",
-    textAlign: "center",
-    marginVertical: 8,
+    marginBottom: 4,
+  },
+  retryText: {
+    color: "#007AFF",
   },
   searchFeedback: {
     flexDirection: "row",
