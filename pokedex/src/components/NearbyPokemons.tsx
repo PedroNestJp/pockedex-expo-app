@@ -1,5 +1,4 @@
-// src/components/NearbyPokemons.tsx
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -7,42 +6,12 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import { useQuery } from "@tanstack/react-query";
 
-import type { Pokemon } from "../services/types";
-import { PokemonService } from "../services/PokemonService";
-import { useNotifications } from "../context/NotificationsContext";
+import { useNearbyPokemons } from "../hooks/useNearbyPokemons";
 import { PokemonCard } from "./PokemonCard";
 
-const repo = new PokemonService();
-
 export function NearbyPokemons({ count = 3 }: { count?: number }) {
-  const { notifyNearby } = useNotifications();
-  const hasNotifiedRef = useRef(false);
-
-  const {
-    data: pokemons = [],
-    isFetching,
-    isError,
-  } = useQuery<Pokemon[], Error>({
-    queryKey: ["nearby"],
-    queryFn: () => repo.getRandomPokemons(count),
-    refetchInterval: 5 * 60 * 1000, // refetch a cada 5 minutos
-    // Handle errors using the isError state
-  });
-
-  // só notifica a partir do segundo fetch, evitando duplicação inicial
-  useEffect(() => {
-    if (pokemons.length > 0) {
-      const names = pokemons.map((p) => p.name);
-      if (hasNotifiedRef.current) {
-        notifyNearby(names);
-      } else {
-        hasNotifiedRef.current = true;
-      }
-    }
-  }, [pokemons, notifyNearby]);
-
+  const { pokemons, isFetching, isError } = useNearbyPokemons(count);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pokémons por perto</Text>
@@ -60,6 +29,7 @@ export function NearbyPokemons({ count = 3 }: { count?: number }) {
           </Text>
         </View>
       )}
+
       {!isFetching && !isError && (
         <FlatList
           horizontal
