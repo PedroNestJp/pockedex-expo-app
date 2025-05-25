@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "expo-router";
 
 import { globalStyles } from "../src/theme/styles";
@@ -16,7 +16,6 @@ import { FavoriteRepository } from "../src/data/repositories/FavoriteRepository"
 import type { Pokemon } from "../src/domain/models/Pokemon";
 import { PokemonCard } from "../src/components/PokemonCard";
 import { SearchBar } from "../src/components/SearchBar";
-import { useNearbyPokemons } from "../src/hooks/useNearbyPokemons";
 
 const repo = new PokemonRepository();
 const favRepo = new FavoriteRepository();
@@ -43,7 +42,7 @@ export default function PokemonListScreen() {
   } = useQuery<Pokemon, Error>({
     queryKey: ["search", search],
     queryFn: () => repo.getPokemonByNameOrId(search),
-    enabled: search.length > 0,
+    enabled: !!search,
   });
 
   // Listagem completa
@@ -52,19 +51,11 @@ export default function PokemonListScreen() {
     isLoading: isLoadingAll,
     isError: isErrorAll,
   } = useQuery<Pokemon[], Error>({
-    queryKey: ["pokemons", 0],
-    queryFn: () => repo.getPokemons(0, 151),
+    queryKey: ["pokemons"],
+    queryFn: () => repo.getPokemons(0, 20),
   });
 
-  // Pokémons por perto via hook customizado
-  const {
-    pokemons: nearby,
-    isFetching: isFetchingNearby,
-    isError: isErrorNearby,
-    refetch: refetchNearby,
-  } = useNearbyPokemons(3);
-
-  // Estados iniciais de loading/erro
+  // loading / error iniciais
   if (isLoadingAll) {
     return (
       <View style={globalStyles.containerCenter}>
@@ -80,9 +71,8 @@ export default function PokemonListScreen() {
     );
   }
 
-  // Dados a exibir: busca ou lista principal
-  const displayData =
-    search.length > 0 ? (searched ? [searched] : []) : allPokemons;
+  // dado a exibir: busca ou lista completa
+  const displayData = search ? (searched ? [searched] : []) : allPokemons;
 
   return (
     <View style={styles.screen}>
@@ -91,45 +81,13 @@ export default function PokemonListScreen() {
         <Text>Ver Favoritos</Text>
       </Link>
 
-      <View style={styles.nearbySection}>
-        <Text style={styles.sectionTitle}>Pokémons por perto</Text>
-        {isFetchingNearby && <ActivityIndicator style={styles.nearbyLoader} />}
-        {isErrorNearby && (
-          <View style={styles.nearbyErrorContainer}>
-            <Text style={styles.nearbyErrorText}>
-              Erro ao carregar pokémons por perto
-            </Text>
-            <Text onPress={() => refetchNearby()} style={styles.retryText}>
-              Tentar novamente
-            </Text>
-          </View>
-        )}
-        {!isFetchingNearby && !isErrorNearby && (
-          <FlatList
-            horizontal
-            data={nearby}
-            keyExtractor={(p) => p.id.toString()}
-            renderItem={({ item }) => (
-              <PokemonCard
-                pokemon={item}
-                isFavorite={favorites.some((f) => f.id === item.id)}
-                onToggle={toggleMutation.mutate}
-              />
-            )}
-            showsHorizontalScrollIndicator={false}
-            onRefresh={refetchNearby}
-            refreshing={isFetchingNearby}
-          />
-        )}
-      </View>
-
       {isSearching && (
         <View style={styles.searchFeedback}>
           <ActivityIndicator size="small" />
           <Text style={styles.searchText}>Buscando...</Text>
         </View>
       )}
-      {isSearchError && search.length > 0 && (
+      {isSearchError && search && (
         <View style={styles.searchFeedback}>
           <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
         </View>
@@ -150,7 +108,7 @@ export default function PokemonListScreen() {
           );
         }}
         onRefresh={() =>
-          queryClient.invalidateQueries({ queryKey: ["pokemons", 0] })
+          queryClient.invalidateQueries({ queryKey: ["pokemons"] })
         }
         refreshing={isLoadingAll}
       />
@@ -169,31 +127,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginHorizontal: 16,
     borderRadius: 8,
-  },
-  nearbySection: {
-    marginVertical: 16,
-    marginLeft: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  nearbyLoader: {
-    marginVertical: 8,
-  },
-  nearbyErrorContainer: {
-    alignItems: "center",
-    padding: 12,
-    backgroundColor: "#FDECEA",
-    marginBottom: 8,
-  },
-  nearbyErrorText: {
-    color: "#b00020",
-    marginBottom: 4,
-  },
-  retryText: {
-    color: "#007AFF",
   },
   searchFeedback: {
     flexDirection: "row",

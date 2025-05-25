@@ -1,3 +1,4 @@
+// src/components/NearbyPokemons.tsx
 import React from "react";
 import {
   View,
