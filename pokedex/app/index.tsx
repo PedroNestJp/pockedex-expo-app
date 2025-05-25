@@ -21,6 +21,7 @@ const repo = new PokemonRepository();
 const favRepo = new FavoriteRepository();
 
 export default function PokemonListScreen() {
+  console.log("🏁 Renderizou PokemonListScreen");
   const [search, setSearch] = useState("");
   const queryClient = useQueryClient();
 
@@ -52,8 +53,13 @@ export default function PokemonListScreen() {
     isError: isErrorAll,
   } = useQuery<Pokemon[], Error>({
     queryKey: ["pokemons"],
-    queryFn: () => repo.getPokemons(0, 20),
+    queryFn: async () => {
+      console.log("🔄 Disparando repo.getPokemons");
+      return repo.getPokemons(0, 20);
+    },
   });
+
+  console.log("allPokemons:", allPokemons);
 
   // Loading inicial
   if (isLoadingAll) {
@@ -83,21 +89,26 @@ export default function PokemonListScreen() {
         showsVerticalScrollIndicator={false}
         // Cabeçalho rolável com search + favoritos
         ListHeaderComponent={() => (
-          <View style={styles.header}>
-            <SearchBar value={search} onChangeText={setSearch} />
-            <Link href="/favorites" style={styles.favLink}>
-              <Text>Ver Favoritos</Text>
-            </Link>
-            {isSearching && (
-              <View style={styles.searchFeedback}>
-                <ActivityIndicator size="small" />
-                <Text style={styles.searchText}>Buscando...</Text>
-              </View>
-            )}
-            {isSearchError && search && (
-              <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
-            )}
-          </View>
+          console.log("displayData:", displayData),
+          (
+            <View style={styles.header}>
+              <SearchBar value={search} onChangeText={setSearch} />
+              <Link href="/favorites" style={styles.favLink}>
+                <Text>Ver Favoritos</Text>
+              </Link>
+              {isSearching && (
+                <View style={styles.searchFeedback}>
+                  <ActivityIndicator size="small" />
+                  <Text style={styles.searchText}>Buscando...</Text>
+                </View>
+              )}
+              {isSearchError && search && (
+                <Text style={styles.searchErrorText}>
+                  Pokémon não encontrado
+                </Text>
+              )}
+            </View>
+          )
         )}
         renderItem={({ item }) => {
           const isFav = favorites.some((f) => f.id === item.id);

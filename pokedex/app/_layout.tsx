@@ -15,13 +15,13 @@ export default function RootLayout() {
     <SafeAreaView style={styles.root}>
       <NotificationsProvider notificationService={notificationService}>
         <QueryClientProvider client={queryClient}>
-          {/* Seção fixa de Nearby */}
-          <View style={styles.nearbyWrapper}>
+          <View style={styles.root}>
+            {/* Seção fixa no topo */}
             <NearbyPokemons count={3} />
-          </View>
-          {/* Conteúdo das rotas */}
-          <View style={styles.content}>
-            <Slot />
+            {/* Conteúdo das páginas vai aqui */}
+            <View style={styles.content}>
+              <Slot />
+            </View>
           </View>
         </QueryClientProvider>
       </NotificationsProvider>
