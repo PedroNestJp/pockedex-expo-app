@@ -1,8 +1,7 @@
-// app/_layout.tsx
 import React from "react";
 import { Slot } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { View, StyleSheet } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NotificationsProvider } from "../src/context/NotificationsContext";
 import { ExpoNotificationService } from "../src/services/NotificationService";
@@ -13,26 +12,34 @@ const notificationService = new ExpoNotificationService();
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
+    <SafeAreaView style={styles.root}>
       <NotificationsProvider notificationService={notificationService}>
         <QueryClientProvider client={queryClient}>
-          <View style={styles.container}>
-            {/* Seção fixa no topo */}
+          {/* Seção fixa de Nearby */}
+          <View style={styles.nearbyWrapper}>
             <NearbyPokemons count={3} />
-            {/* Conteúdo das páginas vai aqui */}
-            <View style={styles.content}>
-              <Slot />
-            </View>
+          </View>
+          {/* Conteúdo das rotas */}
+          <View style={styles.content}>
+            <Slot />
           </View>
         </QueryClientProvider>
       </NotificationsProvider>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  nearbyWrapper: {
+    borderBottomWidth: 1,
+    borderColor: "#eee",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: "#fafafa",
   },
   content: {
     flex: 1,

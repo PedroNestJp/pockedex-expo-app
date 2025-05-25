@@ -1,4 +1,3 @@
-// app/index.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -6,6 +5,7 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
+  SafeAreaView,
 } from "react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "expo-router";
@@ -34,7 +34,7 @@ export default function PokemonListScreen() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }),
   });
 
-  // Busca por nome ou número
+  // Busca
   const {
     data: searched,
     isLoading: isSearching,
@@ -45,7 +45,7 @@ export default function PokemonListScreen() {
     enabled: !!search,
   });
 
-  // Listagem completa
+  // Listagem principal
   const {
     data: allPokemons,
     isLoading: isLoadingAll,
@@ -55,7 +55,7 @@ export default function PokemonListScreen() {
     queryFn: () => repo.getPokemons(0, 20),
   });
 
-  // loading / error iniciais
+  // Loading inicial
   if (isLoadingAll) {
     return (
       <View style={globalStyles.containerCenter}>
@@ -71,32 +71,34 @@ export default function PokemonListScreen() {
     );
   }
 
-  // dado a exibir: busca ou lista completa
+  // Dados a exibir
   const displayData = search ? (searched ? [searched] : []) : allPokemons;
 
   return (
-    <View style={styles.screen}>
-      <SearchBar value={search} onChangeText={setSearch} />
-      <Link href="/favorites" style={styles.favLink}>
-        <Text>Ver Favoritos</Text>
-      </Link>
-
-      {isSearching && (
-        <View style={styles.searchFeedback}>
-          <ActivityIndicator size="small" />
-          <Text style={styles.searchText}>Buscando...</Text>
-        </View>
-      )}
-      {isSearchError && search && (
-        <View style={styles.searchFeedback}>
-          <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
-        </View>
-      )}
-
+    <SafeAreaView style={styles.root}>
       <FlatList
         data={displayData}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.list}
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
+        // Cabeçalho rolável com search + favoritos
+        ListHeaderComponent={() => (
+          <View style={styles.header}>
+            <SearchBar value={search} onChangeText={setSearch} />
+            <Link href="/favorites" style={styles.favLink}>
+              <Text>Ver Favoritos</Text>
+            </Link>
+            {isSearching && (
+              <View style={styles.searchFeedback}>
+                <ActivityIndicator size="small" />
+                <Text style={styles.searchText}>Buscando...</Text>
+              </View>
+            )}
+            {isSearchError && search && (
+              <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
+            )}
+          </View>
+        )}
         renderItem={({ item }) => {
           const isFav = favorites.some((f) => f.id === item.id);
           return (
@@ -107,41 +109,50 @@ export default function PokemonListScreen() {
             />
           );
         }}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        contentContainerStyle={styles.listContent}
         onRefresh={() =>
           queryClient.invalidateQueries({ queryKey: ["pokemons"] })
         }
         refreshing={isLoadingAll}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    paddingVertical: 16,
+  root: { flex: 1, backgroundColor: "#fff" },
+  header: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderColor: "#eee",
   },
   favLink: {
-    padding: 12,
-    backgroundColor: "#EEE",
+    marginTop: 8,
+    paddingVertical: 10,
+    backgroundColor: "#ececec",
+    borderRadius: 6,
     textAlign: "center",
-    marginHorizontal: 16,
-    borderRadius: 8,
   },
   searchFeedback: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 8,
+    marginTop: 6,
   },
-  searchText: {
-    marginLeft: 8,
-  },
+  searchText: { marginLeft: 8 },
   searchErrorText: {
+    marginTop: 6,
     color: "#b00020",
   },
-  list: {
-    paddingHorizontal: 16,
+  separator: {
+    height: 1,
+    backgroundColor: "#f0f0f0",
+    marginHorizontal: 16,
+  },
+  listContent: {
     paddingBottom: 32,
   },
 });
