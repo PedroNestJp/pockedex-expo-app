@@ -19,6 +19,11 @@ expo-env.d.ts
 *.mobileprovision
 android/
 ios/
+ios/*
+*.xcodeproj/
+*.xcworkspace/
+*Podfile*
+
 
 # Metro
 .metro-health-check*
