@@ -28,7 +28,7 @@ Aplicativo mobile desenvolvido em React Native com Expo, que permite visualizar,
 
 | Tela Inicial                | Detalhes                    | Favoritos                   | Boxes                       |  Add PC box                                   |
 | --------------------------- | --------------------------- | --------------------------- | --------------------------- | ----------------------------------- |
-| ![](./docs/tela-inicial.png) | ![](./docs/detalhes.png) | ![](./docs/favoritos.png) | ![](./docs/pc-box.png) | ![](pokedex/docs/botao-add-box.png) |                           |
+| ![](pokedex/docs/tela-inicial.png) | ![](pokedex/docs/detalhes.png) | ![](pokedex/docs/favoritos.png) | ![](pokedex/docs/pc-box.png) | ![](pokedex/docs/botao-add-box.png) |                           |
 
 ---
 
