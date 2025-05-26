@@ -36,10 +36,6 @@ export default function CreateBoxScreen() {
     );
   }
   async function handleSave() {
-    console.log("🚀 handleSave acionado");
-    console.log("name:", name);
-    console.log("selectedTypes:", selectedTypes);
-
     if (name.trim().length < 6) {
       Alert.alert("Erro", "O nome deve ter no mínimo 6 caracteres.");
       return;
