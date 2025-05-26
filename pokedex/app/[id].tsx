@@ -1,20 +1,69 @@
-// app/[id].tsx
 import React from "react";
-import { View, Text, Image, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  Button,
+} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { PokemonRepository } from "../src/data/repositories/PokemonRepository";
 import { globalStyles } from "../src/theme/styles";
+import { PCBoxRepository } from "../src/data/repositories/PCBoxRepository";
 import type { PokemonDetails } from "../src/domain/models/PokemonDetails";
+import { spacing, typography } from "../src/theme";
 
 const repo = new PokemonRepository();
+const boxRepo = new PCBoxRepository();
+
 export default function PokemonDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+
   const { data, isLoading, isError } = useQuery<PokemonDetails>({
     queryKey: ["pokemon", id],
     queryFn: () => repo.getPokemonById(Number(id)),
-    // refetchOnWindowFocus: false, // desabilita o refetch quando a tela volta a ter foco
+    enabled: !!id,
   });
+
+  const { data: boxes = [] } = useQuery({
+    queryKey: ["pcBoxes"],
+    queryFn: () => boxRepo.getBoxes(),
+  });
+
+  const boxesWithPokemon = boxes?.filter((box) =>
+    box.pokemons.includes(data?.id ?? -1)
+  );
+
+  async function handleAddToBox() {
+    try {
+      if (boxes.length === 0) {
+        Alert.alert("Você ainda não criou nenhuma box.");
+        return;
+      }
+
+      Alert.alert(
+        "Adicionar à Box",
+        "Escolha uma box:",
+        boxes.map((box) => ({
+          text: box.name,
+          onPress: async () => {
+            await boxRepo.togglePokemon(box.id, data!.id);
+            Alert.alert(
+              "Sucesso",
+              `Pokémon ${data!.name} foi atualizado na box "${box.name}"`
+            );
+          },
+        }))
+      );
+    } catch (error) {
+      console.error("Erro ao adicionar à box:", error);
+      Alert.alert("Erro", "Falha ao adicionar Pokémon à box.");
+    }
+  }
+
   if (isLoading)
     return (
       <View style={globalStyles.containerCenter}>
@@ -47,25 +96,41 @@ export default function PokemonDetailsScreen() {
           {s.stat.name}: {s.base_stat}
         </Text>
       ))}
+
+      <View style={{ marginTop: spacing.lg }}>
+        <Button title="Adicionar à Box" onPress={handleAddToBox} />
+        {boxesWithPokemon && boxesWithPokemon.length > 0 && (
+          <View style={{ marginTop: spacing.md }}>
+            <Text style={{ fontWeight: typography.fontWeight.medium }}>
+              Este Pokémon está em:
+            </Text>
+            {boxesWithPokemon.map((box) => (
+              <Text key={box.id} style={{ marginLeft: spacing.sm }}>
+                • {box.name}
+              </Text>
+            ))}
+          </View>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: spacing.lg,
   },
   image: {
     width: 120,
     height: 120,
     alignSelf: "center",
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   name: {
-    fontSize: 24,
-    fontWeight: "600",
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
     textAlign: "center",
     textTransform: "capitalize",
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
 });
