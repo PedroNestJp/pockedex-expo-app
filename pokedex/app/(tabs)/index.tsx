@@ -46,6 +46,22 @@ export default function PokemonListScreen() {
     );
   }
 
+  const HeaderComponent = (
+    <View style={styles.header}>
+      <Image source={require("../../assets/logo.png")} style={styles.logo} />
+      <SearchBar value={search} onChangeText={setSearch} />
+      {isSearching && (
+        <View style={styles.searchFeedback}>
+          <ActivityIndicator size="small" />
+          <Text style={styles.searchText}>Buscando...</Text>
+        </View>
+      )}
+      {isSearchError && search && (
+        <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
+      )}
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.root}>
       <FlatList
@@ -61,24 +77,7 @@ export default function PokemonListScreen() {
           paddingBottom: spacing.xl,
           gap: spacing.md,
         }}
-        ListHeaderComponent={() => (
-          <View style={styles.header}>
-            <Image
-              source={require("../../assets/logo.png")}
-              style={styles.logo}
-            />
-            <SearchBar value={search} onChangeText={setSearch} />
-            {isSearching && (
-              <View style={styles.searchFeedback}>
-                <ActivityIndicator size="small" />
-                <Text style={styles.searchText}>Buscando...</Text>
-              </View>
-            )}
-            {isSearchError && search && (
-              <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
-            )}
-          </View>
-        )}
+        ListHeaderComponent={HeaderComponent}
         renderItem={({ item }) => {
           const isFav = favorites.some((f) => f.id === item.id);
           return (
