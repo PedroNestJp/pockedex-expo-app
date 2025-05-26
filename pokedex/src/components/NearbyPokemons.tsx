@@ -11,7 +11,7 @@ import {
 import { Link } from "expo-router";
 
 import { useNearbyPokemons } from "../hooks/useNearbyPokemons";
-import { PokemonCard } from "./PokemonCard";
+import { NearbyPokemonCard } from "./NearbyPokemonCard";
 
 export function NearbyPokemons({ count = 3 }: { count?: number }) {
   const { pokemons, isFetching, isError } = useNearbyPokemons(count);
@@ -38,19 +38,9 @@ export function NearbyPokemons({ count = 3 }: { count?: number }) {
           horizontal
           data={pokemons}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <PokemonCard
-              pokemon={item}
-              isFavorite={false}
-              onToggle={() => {}}
-            />
-          )}
-          contentContainerStyle={styles.list}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text>Nenhum Pokémon por perto.</Text>
-            </View>
-          }
+          renderItem={({ item }) => <NearbyPokemonCard pokemon={item} />}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 12 }}
         />
       )}
     </View>

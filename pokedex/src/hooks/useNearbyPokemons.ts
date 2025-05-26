@@ -14,8 +14,8 @@ export function useNearbyPokemons(count: number) {
   const query = useQuery<Pokemon[], Error>({
     queryKey: ["nearby", count],
     queryFn: () => service.getRandomPokemons(count),
-    refetchInterval: 5 * 60 * 1000, // 5min
-    staleTime: 5 * 60 * 1000, // evita refetch on focus
+    refetchInterval: 1 * 60 * 1000, // 1 minuto
+    staleTime: 1 * 60 * 1000, // evita refetch on focus
     refetchOnWindowFocus: false,
   });
 
