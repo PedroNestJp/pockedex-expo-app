@@ -21,7 +21,6 @@ export function NotificationsProvider({
   useEffect(() => {
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
-        shouldShowAlert: true,
         shouldPlaySound: true,
         shouldShowBanner: true,
         shouldShowList: true,
