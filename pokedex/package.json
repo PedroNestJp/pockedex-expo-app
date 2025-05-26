@@ -28,7 +28,8 @@
     "react-native-safe-area-context": "^5.4.1",
     "react-native-uuid": "^2.0.3",
     "react-native-web": "^0.20.0",
-    "react-native-screens": "~4.10.0"
+    "react-native-screens": "~4.10.0",
+    "@expo/vector-icons": "^14.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -8,4 +8,5 @@ export const colors = {
   border: "#E0E0E0",
   error: "#b00020",
   surface: "#f2f2f2",
+  lavender: "#F0EFFF",
 };

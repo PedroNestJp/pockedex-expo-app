@@ -1,6 +1,7 @@
 import React from "react";
 import { View, TextInput, StyleSheet } from "react-native";
-import { colors, spacing, typography } from "../theme";
+import { Ionicons } from "@expo/vector-icons";
+import { spacing, colors, typography } from "../theme";
 
 interface Props {
   value: string;
@@ -11,13 +12,19 @@ export function SearchBar({ value, onChangeText }: Props) {
   return (
     <View style={styles.container}>
       <TextInput
-        placeholder="Busque pelo nome ou número do Pokémon"
+        style={styles.input}
+        placeholder="Search Name Or Number"
+        placeholderTextColor={colors.textSecondary}
         value={value}
         onChangeText={onChangeText}
-        style={styles.input}
-        placeholderTextColor={colors.border}
         autoCapitalize="none"
         autoCorrect={false}
+      />
+      <Ionicons
+        name="search"
+        size={20}
+        color={colors.textSecondary}
+        style={styles.icon}
       />
     </View>
   );
@@ -25,16 +32,21 @@ export function SearchBar({ value, onChangeText }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: spacing.sm,
-    backgroundColor: colors.background,
+    backgroundColor: colors.lavender,
+    borderRadius: 16,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: spacing.md,
   },
   input: {
-    height: 40,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: spacing.sm,
-    paddingHorizontal: spacing.md,
+    flex: 1,
     fontSize: typography.fontSize.md,
-    color: colors.text,
+    color: colors.textPrimary,
+    fontFamily: "Poppins-Regular",
+  },
+  icon: {
+    marginLeft: spacing.sm,
   },
 });

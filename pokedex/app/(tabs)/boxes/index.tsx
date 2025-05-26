@@ -42,10 +42,8 @@ export default function BoxesScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Link href="/boxes/create">
-        <TouchableOpacity
-          style={[styles.box, { backgroundColor: colors.primary }]}
-        >
+      <Link href="/boxes/create" asChild>
+        <TouchableOpacity style={styles.box}>
           <Text style={[styles.boxText, { color: colors.background }]}>
             + Nova Box
           </Text>
@@ -75,6 +73,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
+
     backgroundColor: colors.cardBackground,
     borderRadius: spacing.sm,
   },

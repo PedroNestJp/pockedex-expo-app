@@ -41,12 +41,13 @@ export function PokemonCard({ pokemon, isFavorite, onToggle }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFF6F6",
+    backgroundColor: "#FFF9F2",
     borderRadius: 16,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.sm,
     alignItems: "center",
     justifyContent: "center",
+    height: 180,
     width: "100%",
     aspectRatio: 1,
     position: "relative",
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   image: {
-    width: 120,
+    width: 100,
     height: 120,
     resizeMode: "contain",
     marginBottom: spacing.sm,
