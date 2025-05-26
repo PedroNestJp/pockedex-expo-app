@@ -1,6 +1,6 @@
 import { PCBoxDataSource } from "../datasources/PCBoxDataSource";
 import { PCBox } from "../../domain/models/PCBox";
-import { v4 as uuidv4 } from "uuid";
+import uuid from "react-native-uuid";
 
 const ds = new PCBoxDataSource();
 
@@ -12,7 +12,7 @@ export class PCBoxRepository {
   async addBox(name: string, types: string[]): Promise<PCBox> {
     const boxes = await ds.getAll();
     const newBox: PCBox = {
-      id: uuidv4(),
+      id: uuid.v4() as string, // precisa forçar como string
       name,
       types,
       pokemons: [],

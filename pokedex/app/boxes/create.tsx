@@ -35,8 +35,11 @@ export default function CreateBoxScreen() {
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
   }
-
   async function handleSave() {
+    console.log("🚀 handleSave acionado");
+    console.log("name:", name);
+    console.log("selectedTypes:", selectedTypes);
+
     if (name.trim().length < 6) {
       Alert.alert("Erro", "O nome deve ter no mínimo 6 caracteres.");
       return;
@@ -45,8 +48,15 @@ export default function CreateBoxScreen() {
       Alert.alert("Erro", "Selecione pelo menos 1 tipo.");
       return;
     }
-    await boxRepo.addBox(name.trim(), selectedTypes);
-    router.back();
+
+    try {
+      const box = await boxRepo.addBox(name.trim(), selectedTypes);
+      console.log("✅ Box salva:", box);
+      router.back();
+    } catch (error) {
+      console.error("❌ Erro ao salvar a Box:", error);
+      Alert.alert("Erro", "Falha ao salvar a box.");
+    }
   }
 
   return (

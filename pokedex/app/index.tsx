@@ -53,12 +53,12 @@ export default function PokemonListScreen() {
         ListHeaderComponent={() => (
           <View style={styles.header}>
             <SearchBar value={search} onChangeText={setSearch} />
-            <Link href="/favorites" style={styles.favLink}>
-              <Text>Ver Favoritos</Text>
-            </Link>
             <View style={styles.linksWrapper}>
               <Link href="/favorites" style={styles.linkBox}>
                 <Text style={styles.linkText}>Ver Favoritos</Text>
+              </Link>
+              <Link href="/boxes" style={styles.linkBox}>
+                <Text style={styles.linkText}>Ver Boxes</Text>
               </Link>
               <Link href="/boxes/create" style={styles.linkBox}>
                 <Text style={styles.linkText}>Criar Nova Box</Text>
@@ -105,13 +105,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: colors.border,
   },
-  favLink: {
-    marginTop: spacing.sm,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surface,
-    borderRadius: spacing.sm,
-    textAlign: "center",
-  },
   searchFeedback: {
     flexDirection: "row",
     alignItems: "center",
@@ -136,9 +129,10 @@ const styles = StyleSheet.create({
   },
   linkBox: {
     paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
     backgroundColor: colors.primary,
     borderRadius: spacing.sm,
-    alignItems: "center",
+    textAlign: "center",
   },
   linkText: {
     color: colors.background,

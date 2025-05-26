@@ -19,13 +19,6 @@ export function NearbyPokemons({ count = 3 }: { count?: number }) {
     <View style={styles.container}>
       <Text style={styles.title}>Pokémons por perto</Text>
 
-      {/* link para a tela de boxes */}
-      <Link href="/boxes" asChild>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Ver boxes</Text>
-        </TouchableOpacity>
-      </Link>
-
       {isFetching && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" />

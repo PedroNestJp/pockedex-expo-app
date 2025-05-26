@@ -26,8 +26,8 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
     "react-native-safe-area-context": "^5.4.1",
-    "react-native-web": "^0.20.0",
-    "uuid": "^11.1.0"
+    "react-native-uuid": "^2.0.3",
+    "react-native-web": "^0.20.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
