@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { Link } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-import { PCBoxRepository } from "../../src/data/repositories/PCBoxRepository";
-import { spacing, colors, typography } from "../../src/theme";
+import { PCBoxRepository } from "../../../src/data/repositories/PCBoxRepository";
+import { spacing, colors, typography } from "../../../src/theme";
 
 const repo = new PCBoxRepository();
 

@@ -8,11 +8,11 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Link } from "expo-router";
-import { globalStyles } from "../src/theme/styles";
-import { SearchBar } from "../src/components/SearchBar";
-import { PokemonCard } from "../src/components/PokemonCard";
-import { usePokemonList } from "../src/viewmodels/usePokemonList";
-import { spacing, colors, typography } from "../src/theme";
+import { globalStyles } from "../../src/theme/styles";
+import { SearchBar } from "../../src/components/SearchBar";
+import { PokemonCard } from "../../src/components/PokemonCard";
+import { usePokemonList } from "../../src/viewmodels/usePokemonList";
+import { spacing, colors, typography } from "../../src/theme";
 
 export default function PokemonListScreen() {
   const {

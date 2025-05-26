@@ -11,9 +11,9 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-import { PokemonRepository } from "../../src/data/repositories/PokemonRepository";
-import { PCBoxRepository } from "../../src/data/repositories/PCBoxRepository";
-import { colors, spacing, typography } from "../../src/theme";
+import { PokemonRepository } from "../../../src/data/repositories/PokemonRepository";
+import { PCBoxRepository } from "../../../src/data/repositories/PCBoxRepository";
+import { colors, spacing, typography } from "../../../src/theme";
 
 const pokeRepo = new PokemonRepository();
 const boxRepo = new PCBoxRepository();

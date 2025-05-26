@@ -6,10 +6,10 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { useFavoritePokemons } from "../src/viewmodels/useFavoritePokemons";
-import { globalStyles } from "../src/theme/styles";
-import { PokemonCard } from "../src/components/PokemonCard";
-import { spacing, typography, colors } from "../src/theme";
+import { useFavoritePokemons } from "../../src/viewmodels/useFavoritePokemons";
+import { globalStyles } from "../../src/theme/styles";
+import { PokemonCard } from "../../src/components/PokemonCard";
+import { spacing, typography, colors } from "../../src/theme";
 
 export default function FavoritesScreen() {
   const { isLoading, isError, groupedFavorites } = useFavoritePokemons();

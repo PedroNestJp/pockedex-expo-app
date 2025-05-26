@@ -10,11 +10,11 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 
-import { PCBoxRepository } from "../../src/data/repositories/PCBoxRepository";
-import { FavoriteRepository } from "../../src/data/repositories/FavoriteRepository";
-import { PokemonCard } from "../../src/components/PokemonCard";
-import { globalStyles } from "../../src/theme/styles";
-import { spacing, typography } from "../../src/theme";
+import { PCBoxRepository } from "../../../src/data/repositories/PCBoxRepository";
+import { FavoriteRepository } from "../../../src/data/repositories/FavoriteRepository";
+import { PokemonCard } from "../../../src/components/PokemonCard";
+import { globalStyles } from "../../../src/theme/styles";
+import { spacing, typography } from "../../../src/theme";
 
 const boxRepo = new PCBoxRepository();
 const favRepo = new FavoriteRepository();
