@@ -2,6 +2,7 @@
   "expo": {
     "name": "pokedex",
     "slug": "pokedex",
+    "scheme": "pokedex",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,19 +10,30 @@
     "newArchEnabled": true,
     "plugins": ["expo-router"],
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash/img3.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F5F5F5"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification",
+          "fetch",
+          "remote-notification"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.pedronestjp.pokedex"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/img1.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.pedronestjp.pokedex"
     },
     "web": {
       "favicon": "./assets/favicon.png"
