@@ -5,57 +5,71 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
+  SafeAreaView,
 } from "react-native";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "expo-router";
+
 import { globalStyles } from "../src/theme/styles";
 import { PokemonRepository } from "../src/data/repositories/PokemonRepository";
-import type { Pokemon } from "../src/domain/models/Pokemon";
-import { Link } from "expo-router";
-import { SearchBar } from "../src/components/SearchBar";
 import { FavoriteRepository } from "../src/data/repositories/FavoriteRepository";
+import type { Pokemon } from "../src/domain/models/Pokemon";
 import { PokemonCard } from "../src/components/PokemonCard";
+import { SearchBar } from "../src/components/SearchBar";
 
 const repo = new PokemonRepository();
 const favRepo = new FavoriteRepository();
 
 export default function PokemonListScreen() {
+  console.log("🏁 Renderizou PokemonListScreen");
   const [search, setSearch] = useState("");
-  const queryClient = useQueryClient(); // Movido para dentro do componente
+  const queryClient = useQueryClient();
 
-  const { data: favorites = [] } = useQuery<Pokemon[]>({
-    queryKey: ["favorites"], // Usar objeto para consistência
+  // Favoritos
+  const { data: favorites = [] } = useQuery<Pokemon[], Error>({
+    queryKey: ["favorites"],
     queryFn: () => favRepo.getFavorites(),
   });
-
   const toggleMutation = useMutation({
     mutationFn: (p: Pokemon) => favRepo.toggleFavorite(p),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }), // Usar objeto
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }),
   });
 
+  // Busca
   const {
     data: searched,
     isLoading: isSearching,
     isError: isSearchError,
-  } = useQuery<Pokemon | undefined>({
+  } = useQuery<Pokemon, Error>({
     queryKey: ["search", search],
     queryFn: () => repo.getPokemonByNameOrId(search),
-    enabled: search.length > 0,
+    enabled: !!search,
   });
 
-  const { data, isLoading, isError } = useQuery<Pokemon[]>({
-    queryKey: ["pokemons", 0],
-    queryFn: () => repo.getPokemons(0, 151),
+  // Listagem principal
+  const {
+    data: allPokemons,
+    isLoading: isLoadingAll,
+    isError: isErrorAll,
+  } = useQuery<Pokemon[], Error>({
+    queryKey: ["pokemons"],
+    queryFn: async () => {
+      console.log("🔄 Disparando repo.getPokemons");
+      return repo.getPokemons(0, 20);
+    },
   });
 
-  if (isLoading) {
+  console.log("allPokemons:", allPokemons);
+
+  // Loading inicial
+  if (isLoadingAll) {
     return (
       <View style={globalStyles.containerCenter}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
-
-  if (isError || !data) {
+  if (isErrorAll || !allPokemons) {
     return (
       <View style={globalStyles.containerCenter}>
         <Text>Erro ao carregar Pokémons.</Text>
@@ -63,37 +77,41 @@ export default function PokemonListScreen() {
     );
   }
 
-  // Determinar quais dados mostrar: resultado da busca ou lista principal
-  const displayData = search.length > 0 && searched ? [searched] : data;
+  // Dados a exibir
+  const displayData = search ? (searched ? [searched] : []) : allPokemons;
 
   return (
-    <View style={{ flex: 1, paddingVertical: 32 }}>
-      <SearchBar value={search} onChangeText={setSearch} />
-      <Link href="/favorites" style={styles.link}>
-        <Text>Ver Favoritos</Text>
-      </Link>
-
-      {/* Mostrar loading da busca quando apropriado */}
-      {isSearching && (
-        <View style={styles.searchLoading}>
-          <ActivityIndicator size="small" />
-          <Text>Buscando...</Text>
-        </View>
-      )}
-
-      {/* Mostrar erro de busca quando apropriado */}
-      {isSearchError && search.length > 0 && (
-        <View style={styles.searchError}>
-          <Text>Pokémon não encontrado</Text>
-        </View>
-      )}
-
+    <SafeAreaView style={styles.root}>
       <FlatList
         data={displayData}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.list}
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
+        // Cabeçalho rolável com search + favoritos
+        ListHeaderComponent={() => (
+          console.log("displayData:", displayData),
+          (
+            <View style={styles.header}>
+              <SearchBar value={search} onChangeText={setSearch} />
+              <Link href="/favorites" style={styles.favLink}>
+                <Text>Ver Favoritos</Text>
+              </Link>
+              {isSearching && (
+                <View style={styles.searchFeedback}>
+                  <ActivityIndicator size="small" />
+                  <Text style={styles.searchText}>Buscando...</Text>
+                </View>
+              )}
+              {isSearchError && search && (
+                <Text style={styles.searchErrorText}>
+                  Pokémon não encontrado
+                </Text>
+              )}
+            </View>
+          )
+        )}
         renderItem={({ item }) => {
-          const isFav = favorites.some((p) => p.id === item.id);
+          const isFav = favorites.some((f) => f.id === item.id);
           return (
             <PokemonCard
               pokemon={item}
@@ -102,30 +120,50 @@ export default function PokemonListScreen() {
             />
           );
         }}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        contentContainerStyle={styles.listContent}
+        onRefresh={() =>
+          queryClient.invalidateQueries({ queryKey: ["pokemons"] })
+        }
+        refreshing={isLoadingAll}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  list: {
-    paddingVertical: 8,
+  root: { flex: 1, backgroundColor: "#fff" },
+  header: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderColor: "#eee",
   },
-  link: {
-    padding: 12,
+  favLink: {
+    marginTop: 8,
+    paddingVertical: 10,
+    backgroundColor: "#ececec",
+    borderRadius: 6,
     textAlign: "center",
-    backgroundColor: "#EEE",
   },
-  searchLoading: {
+  searchFeedback: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    padding: 12,
+    marginTop: 6,
   },
-  searchError: {
-    alignItems: "center",
-    padding: 12,
-    backgroundColor: "#FFE6E6",
+  searchText: { marginLeft: 8 },
+  searchErrorText: {
+    marginTop: 6,
+    color: "#b00020",
   },
-  // Removidos estilos não utilizados (card, image, name)
+  separator: {
+    height: 1,
+    backgroundColor: "#f0f0f0",
+    marginHorizontal: 16,
+  },
+  listContent: {
+    paddingBottom: 32,
+  },
 });

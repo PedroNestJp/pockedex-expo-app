@@ -5,22 +5,28 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "eas:build": "eas build",
+    "preview:build": "eas build --profile development --platform ios",
     "eas:update": "eas update"
   },
   "dependencies": {
+    "@expo/cli": "^0.24.13",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@tanstack/react-query": "^5.76.2",
     "axios": "^1.9.0",
     "expo": "~53.0.9",
+    "expo-dev-client": "~5.1.8",
+    "expo-notifications": "^0.31.2",
     "expo-router": "^5.0.7",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.2",
-    "react-native-safe-area-context": "^5.4.1"
+    "react-native-safe-area-context": "^5.4.1",
+    "react-dom": "19.0.0",
+    "react-native-web": "^0.20.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
