@@ -1,4 +1,3 @@
-// app/favorites.tsx
 import React from "react";
 import {
   View,
@@ -7,24 +6,13 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { useQuery } from "@tanstack/react-query";
-
-import { FavoriteRepository } from "../src/data/repositories/FavoriteRepository";
-import { globalStyles } from "../src/theme/styles";
-import { PokemonCard } from "../src/components/PokemonCard";
-import type { PokemonWithTypes } from "../src/domain/models/PokemonWithTypes";
-
-const favRepo = new FavoriteRepository();
+import { useFavoritePokemons } from "../../src/viewmodels/useFavoritePokemons";
+import { globalStyles } from "../../src/theme/styles";
+import { PokemonCard } from "../../src/components/PokemonCard";
+import { spacing, typography, colors } from "../../src/theme";
 
 export default function FavoritesScreen() {
-  const {
-    data: favs,
-    isLoading,
-    isError,
-  } = useQuery<PokemonWithTypes[], Error>({
-    queryKey: ["favoritesWithTypes"],
-    queryFn: () => favRepo.getFavoritesWithTypes(),
-  });
+  const { isLoading, isError, groupedFavorites } = useFavoritePokemons();
 
   if (isLoading) {
     return (
@@ -40,7 +28,7 @@ export default function FavoritesScreen() {
       </View>
     );
   }
-  if (!favs || favs.length === 0) {
+  if (groupedFavorites.length === 0) {
     return (
       <View style={globalStyles.containerCenter}>
         <Text>Você não tem favoritos ainda.</Text>
@@ -48,25 +36,14 @@ export default function FavoritesScreen() {
     );
   }
 
-  // agrupa por tipo
-  const sections = Object.entries(
-    favs.reduce((map, p) => {
-      p.types.forEach((type) => {
-        if (!map[type]) map[type] = [];
-        map[type].push(p);
-      });
-      return map;
-    }, {} as Record<string, PokemonWithTypes[]>)
-  ).map(([title, data]) => ({ title, data }));
-
   return (
-    <View style={{ flex: 1, paddingVertical: 32 }}>
-      {/* Header de favoritos */}
+    <View style={{ flex: 1, paddingVertical: spacing.xl }}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Pokémons Favoritos</Text>
       </View>
+
       <SectionList
-        sections={sections}
+        sections={groupedFavorites}
         keyExtractor={(item) => item.id.toString()}
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.header}>
@@ -84,15 +61,15 @@ export default function FavoritesScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: "#EEE",
-    paddingVertical: 4,
-    paddingHorizontal: 12,
+    backgroundColor: colors.surface,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
   },
   headerText: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.bold,
   },
   list: {
-    paddingBottom: 16,
+    paddingBottom: spacing.lg,
   },
 });

@@ -18,7 +18,10 @@ export function usePokemonList() {
 
   const toggleFavorite = useMutation({
     mutationFn: (p: Pokemon) => favoriteRepo.toggleFavorite(p),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
+      queryClient.invalidateQueries({ queryKey: ["favoritesWithTypes"] });
+    },
   });
 
   const {

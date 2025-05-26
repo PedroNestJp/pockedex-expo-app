@@ -8,11 +8,11 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Link } from "expo-router";
-import { globalStyles } from "../src/theme/styles";
-import { SearchBar } from "../src/components/SearchBar";
-import { PokemonCard } from "../src/components/PokemonCard";
-import { usePokemonList } from "../src/viewmodels/usePokemonList";
-import { spacing, colors } from "../src/theme";
+import { globalStyles } from "../../src/theme/styles";
+import { SearchBar } from "../../src/components/SearchBar";
+import { PokemonCard } from "../../src/components/PokemonCard";
+import { usePokemonList } from "../../src/viewmodels/usePokemonList";
+import { spacing, colors, typography } from "../../src/theme";
 
 export default function PokemonListScreen() {
   const {
@@ -53,9 +53,18 @@ export default function PokemonListScreen() {
         ListHeaderComponent={() => (
           <View style={styles.header}>
             <SearchBar value={search} onChangeText={setSearch} />
-            <Link href="/favorites" style={styles.favLink}>
-              <Text>Ver Favoritos</Text>
-            </Link>
+            <View style={styles.linksWrapper}>
+              <Link href="/favorites" style={styles.linkBox}>
+                <Text style={styles.linkText}>Ver Favoritos</Text>
+              </Link>
+              <Link href="/boxes" style={styles.linkBox}>
+                <Text style={styles.linkText}>Ver Boxes</Text>
+              </Link>
+              <Link href="/boxes/create" style={styles.linkBox}>
+                <Text style={styles.linkText}>Criar Nova Box</Text>
+              </Link>
+            </View>
+
             {isSearching && (
               <View style={styles.searchFeedback}>
                 <ActivityIndicator size="small" />
@@ -96,13 +105,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: colors.border,
   },
-  favLink: {
-    marginTop: spacing.sm,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.surface,
-    borderRadius: spacing.sm,
-    textAlign: "center",
-  },
   searchFeedback: {
     flexDirection: "row",
     alignItems: "center",
@@ -120,5 +122,20 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: spacing.xl,
+  },
+  linksWrapper: {
+    marginTop: spacing.sm,
+    gap: spacing.sm,
+  },
+  linkBox: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.primary,
+    borderRadius: spacing.sm,
+    textAlign: "center",
+  },
+  linkText: {
+    color: colors.background,
+    fontWeight: typography.fontWeight.bold,
   },
 });

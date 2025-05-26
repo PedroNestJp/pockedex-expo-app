@@ -6,7 +6,9 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
+import { Link } from "expo-router";
 
 import { useNearbyPokemons } from "../hooks/useNearbyPokemons";
 import { PokemonCard } from "./PokemonCard";
@@ -79,6 +81,17 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     alignItems: "center",
-    padding: 12,
+  },
+  button: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
