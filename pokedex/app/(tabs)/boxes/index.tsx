@@ -1,5 +1,4 @@
-// app/boxes/create.tsx
-import React from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -7,22 +6,31 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { Link } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
+import { Link, useFocusEffect } from "expo-router";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { PCBoxRepository } from "../../../src/data/repositories/PCBoxRepository";
 import { spacing, colors, typography } from "../../../src/theme";
 
 const repo = new PCBoxRepository();
 
 export default function BoxesScreen() {
+  const queryClient = useQueryClient();
+
   const {
     data: boxes = [],
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: ["pcBoxes"],
     queryFn: () => repo.getBoxes(),
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [])
+  );
 
   if (isLoading) {
     return (
@@ -41,48 +49,47 @@ export default function BoxesScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <Link href="/boxes/create" asChild>
-        <TouchableOpacity style={styles.box}>
-          <Text style={[styles.boxText, { color: colors.background }]}>
-            + Nova Box
-          </Text>
-        </TouchableOpacity>
-      </Link>
-      <FlatList
-        data={boxes}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <Link href={`/boxes/${item.id}`} asChild>
-            <TouchableOpacity style={styles.box}>
-              <Text style={styles.boxText}>{item.name}</Text>
-            </TouchableOpacity>
-          </Link>
-        )}
-      />
-    </View>
+    <FlatList
+      data={boxes}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={styles.list}
+      ListHeaderComponent={() => (
+        <Link href="/boxes/create" asChild>
+          <TouchableOpacity
+            style={[styles.box, { backgroundColor: colors.primary }]}
+          >
+            <Text style={[styles.boxText, { color: colors.background }]}>
+              + Nova Box
+            </Text>
+          </TouchableOpacity>
+        </Link>
+      )}
+      renderItem={({ item }) => (
+        <Link href={`/boxes/${item.id}`} asChild>
+          <TouchableOpacity style={styles.box}>
+            <Text style={styles.boxText}>{item.name}</Text>
+          </TouchableOpacity>
+        </Link>
+      )}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   list: { padding: spacing.lg },
   box: {
-    textAlign: "center",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
-
-    backgroundColor: colors.cardBackground,
+    backgroundColor: colors.surface,
     borderRadius: spacing.sm,
   },
   boxText: {
     textAlign: "center",
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.primary,
+    fontWeight: typography.fontWeight.medium,
+    fontSize: typography.fontSize.md,
+    backgroundColor: colors.lavender,
     borderRadius: spacing.sm,
+    padding: spacing.sm,
   },
   center: {
     flex: 1,
