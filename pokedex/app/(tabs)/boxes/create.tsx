@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     height: 40,
     marginBottom: spacing.md,
-    color: colors.text,
+    color: colors.textPrimary,
   },
   label: {
     fontWeight: typography.fontWeight.medium,

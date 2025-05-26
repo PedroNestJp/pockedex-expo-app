@@ -1,9 +1,14 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { Pokemon } from "../domain/models/Pokemon";
-import { Link } from "expo-router";
-
 import { colors, spacing, typography } from "../theme";
 
 interface Props {
@@ -13,45 +18,71 @@ interface Props {
 }
 
 export function PokemonCard({ pokemon, isFavorite, onToggle }: Props) {
+  const imageSource =
+    pokemon.image ||
+    `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
+
   return (
-    <Link href={`/pokemon/${pokemon.id}`}>
-      <View style={styles.card}>
-        <Image source={{ uri: pokemon.image }} style={styles.image} />
-        <Text style={styles.name}>{pokemon.name}</Text>
-        <TouchableOpacity onPress={() => onToggle(pokemon)} style={styles.icon}>
-          <Ionicons
-            name={isFavorite ? "heart" : "heart-outline"}
-            size={24}
-            color={isFavorite ? colors.favorite : colors.primary}
-          />
-        </TouchableOpacity>
-      </View>
-    </Link>
+    <View style={styles.card}>
+      <TouchableOpacity
+        onPress={() => onToggle(pokemon)}
+        style={styles.favoriteIcon}
+      >
+        <Ionicons
+          name={isFavorite ? "heart" : "heart-outline"}
+          size={20}
+          color={isFavorite ? colors.favorite : colors.textSecondary}
+        />
+      </TouchableOpacity>
+
+      <Image
+        source={{ uri: imageSource }}
+        style={styles.image}
+        resizeMode="contain"
+      />
+
+      <Text style={styles.name}>
+        {pokemon.name} #{pokemon.id}
+      </Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: "row",
+    backgroundColor: "#FFF9F2",
+    borderRadius: 16,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
     alignItems: "center",
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    justifyContent: "center",
+    height: 180,
+    width: "100%",
+    aspectRatio: 1,
+    position: "relative",
+    shadowColor: "#000",
+    shadowOpacity: Platform.OS === "ios" ? 0.05 : 0.15,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  favoriteIcon: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    zIndex: 1,
   },
   image: {
-    width: 56,
-    height: 56,
-    marginRight: spacing.md,
+    width: 100,
+    height: 120,
+    resizeMode: "contain",
+    marginBottom: spacing.sm,
   },
   name: {
-    flex: 1,
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.medium,
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.textPrimary,
+    textAlign: "center",
     textTransform: "capitalize",
-    color: colors.text,
-  },
-  icon: {
-    padding: spacing.sm,
   },
 });

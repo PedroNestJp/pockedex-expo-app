@@ -6,6 +6,8 @@ import {
   ActivityIndicator,
   StyleSheet,
   SafeAreaView,
+  Image,
+  TouchableOpacity,
 } from "react-native";
 import { Link } from "expo-router";
 import { globalStyles } from "../../src/theme/styles";
@@ -35,6 +37,7 @@ export default function PokemonListScreen() {
       </View>
     );
   }
+
   if (isErrorAll || !displayData) {
     return (
       <View style={globalStyles.containerCenter}>
@@ -43,51 +46,54 @@ export default function PokemonListScreen() {
     );
   }
 
+  const HeaderComponent = (
+    <View style={styles.header}>
+      <Image source={require("../../assets/logo.png")} style={styles.logo} />
+      <SearchBar value={search} onChangeText={setSearch} />
+      {isSearching && (
+        <View style={styles.searchFeedback}>
+          <ActivityIndicator size="small" />
+          <Text style={styles.searchText}>Buscando...</Text>
+        </View>
+      )}
+      {isSearchError && search && (
+        <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
+      )}
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.root}>
       <FlatList
         data={displayData}
+        key={"grid-2"}
         keyExtractor={(item) => item.id.toString()}
-        stickyHeaderIndices={[0]}
+        numColumns={2}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={() => (
-          <View style={styles.header}>
-            <SearchBar value={search} onChangeText={setSearch} />
-            <View style={styles.linksWrapper}>
-              <Link href="/favorites" style={styles.linkBox}>
-                <Text style={styles.linkText}>Ver Favoritos</Text>
-              </Link>
-              <Link href="/boxes" style={styles.linkBox}>
-                <Text style={styles.linkText}>Ver Boxes</Text>
-              </Link>
-              <Link href="/boxes/create" style={styles.linkBox}>
-                <Text style={styles.linkText}>Criar Nova Box</Text>
-              </Link>
-            </View>
-
-            {isSearching && (
-              <View style={styles.searchFeedback}>
-                <ActivityIndicator size="small" />
-                <Text style={styles.searchText}>Buscando...</Text>
-              </View>
-            )}
-            {isSearchError && search && (
-              <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
-            )}
-          </View>
-        )}
+        stickyHeaderIndices={[0]}
+        columnWrapperStyle={{ gap: spacing.md, marginBottom: spacing.md }}
+        contentContainerStyle={{
+          paddingHorizontal: spacing.lg,
+          paddingBottom: spacing.xl,
+          gap: spacing.md,
+        }}
+        ListHeaderComponent={HeaderComponent}
         renderItem={({ item }) => {
           const isFav = favorites.some((f) => f.id === item.id);
           return (
-            <PokemonCard
-              pokemon={item}
-              isFavorite={isFav}
-              onToggle={toggleFavorite}
-            />
+            <View style={{ flex: 1 }}>
+              <Link href={`/pokemon/${item.id}`} asChild>
+                <TouchableOpacity activeOpacity={0.9}>
+                  <PokemonCard
+                    pokemon={item}
+                    isFavorite={isFav}
+                    onToggle={toggleFavorite}
+                  />
+                </TouchableOpacity>
+              </Link>
+            </View>
           );
         }}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        contentContainerStyle={styles.listContent}
         onRefresh={refetchAll}
         refreshing={isLoadingAll}
       />
@@ -96,7 +102,10 @@ export default function PokemonListScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
+  root: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   header: {
     backgroundColor: colors.background,
     paddingHorizontal: spacing.lg,
@@ -110,18 +119,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: spacing.xs,
   },
-  searchText: { marginLeft: spacing.sm },
+  searchText: {
+    marginLeft: spacing.sm,
+  },
   searchErrorText: {
     marginTop: spacing.xs,
     color: colors.error,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.lg,
-  },
-  listContent: {
-    paddingBottom: spacing.xl,
   },
   linksWrapper: {
     marginTop: spacing.sm,
@@ -132,10 +135,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     backgroundColor: colors.primary,
     borderRadius: spacing.sm,
-    textAlign: "center",
+    alignItems: "center",
+    marginBottom: spacing.sm,
   },
   linkText: {
     color: colors.background,
     fontWeight: typography.fontWeight.bold,
+  },
+  logo: {
+    width: 150,
+    height: 50,
+    resizeMode: "contain",
+    alignSelf: "center",
   },
 });

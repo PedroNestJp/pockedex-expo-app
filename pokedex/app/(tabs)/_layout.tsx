@@ -21,6 +21,7 @@ export default function TabsLayout() {
             name="index"
             options={{
               title: "Pokémons",
+              headerShown: false, // ✅ desativa o topo automático
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="list" color={color} size={size} />
               ),

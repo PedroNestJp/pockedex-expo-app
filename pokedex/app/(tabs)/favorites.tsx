@@ -2,7 +2,7 @@ import React from "react";
 import {
   View,
   Text,
-  SectionList,
+  FlatList,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
@@ -21,6 +21,7 @@ export default function FavoritesScreen() {
       </View>
     );
   }
+
   if (isError) {
     return (
       <View style={globalStyles.containerCenter}>
@@ -28,6 +29,7 @@ export default function FavoritesScreen() {
       </View>
     );
   }
+
   if (groupedFavorites.length === 0) {
     return (
       <View style={globalStyles.containerCenter}>
@@ -37,39 +39,63 @@ export default function FavoritesScreen() {
   }
 
   return (
-    <View style={{ flex: 1, paddingVertical: spacing.xl }}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Pokémons Favoritos</Text>
+    <View style={styles.root}>
+      <View style={styles.pageHeader}>
+        <Text style={styles.pageTitle}>Pokémons Favoritos</Text>
       </View>
 
-      <SectionList
-        sections={groupedFavorites}
-        keyExtractor={(item) => item.id.toString()}
-        renderSectionHeader={({ section: { title } }) => (
-          <View style={styles.header}>
-            <Text style={styles.headerText}>{title.toUpperCase()}</Text>
-          </View>
-        )}
-        renderItem={({ item }) => (
-          <PokemonCard pokemon={item} isFavorite onToggle={() => {}} />
-        )}
-        contentContainerStyle={styles.list}
-      />
+      {groupedFavorites.map((section) => (
+        <View key={section.title} style={styles.sectionWrapper}>
+          <Text style={styles.sectionTitle}>{section.title.toUpperCase()}</Text>
+
+          <FlatList
+            data={section.data}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={2}
+            key={`grid-${section.title}`}
+            renderItem={({ item }) => (
+              <View style={{ flex: 1 }}>
+                <PokemonCard pokemon={item} isFavorite onToggle={() => {}} />
+              </View>
+            )}
+            columnWrapperStyle={{
+              gap: spacing.md,
+              marginBottom: spacing.md,
+            }}
+            contentContainerStyle={{
+              paddingHorizontal: spacing.lg,
+              paddingBottom: spacing.lg,
+            }}
+          />
+        </View>
+      ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: colors.surface,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.md,
+  root: {
+    flex: 1,
+    backgroundColor: colors.background,
+    paddingTop: spacing.lg,
   },
-  headerText: {
+  pageHeader: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md,
+  },
+  pageTitle: {
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.textPrimary,
+  },
+  sectionWrapper: {
+    marginBottom: spacing.xl,
+  },
+  sectionTitle: {
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
     fontSize: typography.fontSize.md,
     fontWeight: typography.fontWeight.bold,
-  },
-  list: {
-    paddingBottom: spacing.lg,
+    color: colors.textSecondary,
   },
 });
