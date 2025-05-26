@@ -42,7 +42,7 @@ export default function BoxesScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Link href="/boxes/create" asChild>
+      <Link href="/boxes/create">
         <TouchableOpacity
           style={[styles.box, { backgroundColor: colors.primary }]}
         >
@@ -70,6 +70,9 @@ export default function BoxesScreen() {
 const styles = StyleSheet.create({
   list: { padding: spacing.lg },
   box: {
+    textAlign: "center",
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
     backgroundColor: colors.surface,
@@ -77,8 +80,10 @@ const styles = StyleSheet.create({
   },
   boxText: {
     textAlign: "center",
-    fontWeight: typography.fontWeight.medium,
-    fontSize: typography.fontSize.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.primary,
+    borderRadius: spacing.sm,
   },
   center: {
     flex: 1,
