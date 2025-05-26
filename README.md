@@ -1,6 +1,6 @@
 # 📱 Pokedéx App
 
-Aplicativo mobile desenvolvido em React Native com Expo, que permite visualizar, buscar, favoritar e organizar Pokémons em Boxes personalizadas. Notificacoes são enviadas quando Pokémons aparecem por perto.
+Aplicativo mobile desenvolvido em React Native com Expo, que permite visualizar, buscar, favoritar e organizar Pokémons em Boxes personalizadas. Notificacoes aparecem no topo da tela quando Pokémons aparecem por perto.
 
 ---
 
@@ -8,13 +8,19 @@ Aplicativo mobile desenvolvido em React Native com Expo, que permite visualizar,
 
 * 🔍 Buscar Pokémons por nome ou número
 * ❤️ Favoritar Pokémons
-* 📆 Criar Boxes com tipos definidos
+* 📦 Criar Boxes com tipos definidos
 * ➕ Adicionar/remover Pokémons nas Boxes
 * 📍 Seção de Pokémons por perto (com notificação)
 * 🔔 Notificações locais usando `expo-notifications`
-* 📂 Persistência com `AsyncStorage`
+* 💾 Persistência com `AsyncStorage`
 * 🌐 Imagens oficiais em alta resolução
 * 🧼 UI seguindo design do Figma (modo grid responsivo)
+
+---
+
+## ▶️ Demonstração em vídeo
+
+▶️ [Clique aqui para assistir à demonstração do app](https://drive.google.com/file/d/1_Y0pZ5-uMihz4wquIFKFCrK0kgTxEaEM/view?usp=sharing)
 
 ---
 
@@ -90,5 +96,5 @@ Este projeto é apenas para fins de demonstração técnica.
 
 ## ✨ Autor
 
-Desenvolvido por **Mateus Silva** 💻
-[LinkedIn](https://www.linkedin.com/in/seu-perfil) | [GitHub](https://github.com/seu-usuario)
+Desenvolvido por **Pedro Silva** 💻
+[LinkedIn](https://www.linkedin.com/in/pedronest)
