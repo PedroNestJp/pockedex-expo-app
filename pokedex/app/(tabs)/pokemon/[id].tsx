@@ -10,11 +10,11 @@ import {
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-import { PokemonRepository } from "../src/data/repositories/PokemonRepository";
-import { globalStyles } from "../src/theme/styles";
-import { PCBoxRepository } from "../src/data/repositories/PCBoxRepository";
-import type { PokemonDetails } from "../src/domain/models/PokemonDetails";
-import { spacing, typography } from "../src/theme";
+import { PokemonRepository } from "../../../src/data/repositories/PokemonRepository";
+import { globalStyles } from "../../../src/theme/styles";
+import { PCBoxRepository } from "../../../src/data/repositories/PCBoxRepository";
+import type { PokemonDetails } from "../../../src/domain/models/PokemonDetails";
+import { spacing, typography } from "../../../src/theme";
 
 const repo = new PokemonRepository();
 const boxRepo = new PCBoxRepository();

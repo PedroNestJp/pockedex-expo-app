@@ -14,7 +14,7 @@ interface Props {
 
 export function PokemonCard({ pokemon, isFavorite, onToggle }: Props) {
   return (
-    <Link href={`/${pokemon.id}`}>
+    <Link href={`/pokemon/${pokemon.id}`}>
       <View style={styles.card}>
         <Image source={{ uri: pokemon.image }} style={styles.image} />
         <Text style={styles.name}>{pokemon.name}</Text>
