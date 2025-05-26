@@ -70,26 +70,32 @@ export default function PokemonDetailsScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Topo */}
       <View style={styles.topBar}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+        </TouchableOpacity>
+
         <Image
           source={require("../../../assets/splash/img3.png")}
           style={styles.logo}
         />
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
       </View>
 
-      {/* Nome */}
       <Text style={styles.name}>
         {data.name} #{data.id}
       </Text>
 
-      {/* Imagem */}
       <Image
-        source={{ uri: data.sprites.front_default }}
+        source={{
+          uri:
+            data.sprites.other["official-artwork"].front_default ||
+            data.sprites.front_default,
+        }}
         style={styles.image}
+        resizeMode="contain"
       />
 
       {/* Atributos */}
@@ -165,24 +171,20 @@ function formatStatName(name: string) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: spacing.lg,
-    backgroundColor: colors.background,
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   topBar: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "flex-start",
     marginBottom: spacing.md,
   },
+
+  backButton: {
+    marginRight: spacing.md,
+  },
+
   logo: {
-    width: 120,
-    height: 30,
+    width: 130,
+    height: 32,
     resizeMode: "contain",
   },
   name: {
@@ -191,6 +193,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: spacing.md,
     textTransform: "capitalize",
+    color: colors.textPrimary,
+  },
+  container: {
+    padding: spacing.lg,
+    backgroundColor: colors.background,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   image: {
     width: "100%",

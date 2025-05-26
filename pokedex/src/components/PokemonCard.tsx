@@ -18,6 +18,10 @@ interface Props {
 }
 
 export function PokemonCard({ pokemon, isFavorite, onToggle }: Props) {
+  const imageSource =
+    pokemon.image ||
+    `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
+
   return (
     <View style={styles.card}>
       <TouchableOpacity
@@ -31,7 +35,12 @@ export function PokemonCard({ pokemon, isFavorite, onToggle }: Props) {
         />
       </TouchableOpacity>
 
-      <Image source={{ uri: pokemon.image }} style={styles.image} />
+      <Image
+        source={{ uri: imageSource }}
+        style={styles.image}
+        resizeMode="contain"
+      />
+
       <Text style={styles.name}>
         {pokemon.name} #{pokemon.id}
       </Text>

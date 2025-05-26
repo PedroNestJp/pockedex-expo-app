@@ -32,9 +32,10 @@ export function SearchBar({ value, onChangeText }: Props) {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: spacing.xl,
     backgroundColor: colors.lavender,
     borderRadius: 16,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.md,
     flexDirection: "row",
     alignItems: "center",
