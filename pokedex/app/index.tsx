@@ -1,5 +1,4 @@
-// app/index.tsx
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -8,61 +7,27 @@ import {
   StyleSheet,
   SafeAreaView,
 } from "react-native";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "expo-router";
-
 import { globalStyles } from "../src/theme/styles";
-import { PokemonRepository } from "../src/data/repositories/PokemonRepository";
-import { FavoriteRepository } from "../src/data/repositories/FavoriteRepository";
-import type { Pokemon } from "../src/domain/models/Pokemon";
-import { PokemonCard } from "../src/components/PokemonCard";
 import { SearchBar } from "../src/components/SearchBar";
-
-const repo = new PokemonRepository();
-const favRepo = new FavoriteRepository();
+import { PokemonCard } from "../src/components/PokemonCard";
+import { usePokemonList } from "../src/viewmodels/usePokemonList";
+import { spacing, colors } from "../src/theme";
 
 export default function PokemonListScreen() {
-  console.log("🏁 Renderizou PokemonListScreen");
-  const [search, setSearch] = useState("");
-  const queryClient = useQueryClient();
-
-  // Favoritos
-  const { data: favorites = [] } = useQuery<Pokemon[], Error>({
-    queryKey: ["favorites"],
-    queryFn: () => favRepo.getFavorites(),
-  });
-  const toggleMutation = useMutation({
-    mutationFn: (p: Pokemon) => favRepo.toggleFavorite(p),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }),
-  });
-
-  // Busca
   const {
-    data: searched,
-    isLoading: isSearching,
-    isError: isSearchError,
-  } = useQuery<Pokemon, Error>({
-    queryKey: ["search", search],
-    queryFn: () => repo.getPokemonByNameOrId(search),
-    enabled: !!search,
-  });
+    search,
+    setSearch,
+    displayData,
+    isLoadingAll,
+    isErrorAll,
+    isSearching,
+    isSearchError,
+    favorites,
+    toggleFavorite,
+    refetchAll,
+  } = usePokemonList();
 
-  // Listagem principal
-  const {
-    data: allPokemons,
-    isLoading: isLoadingAll,
-    isError: isErrorAll,
-  } = useQuery<Pokemon[], Error>({
-    queryKey: ["pokemons"],
-    queryFn: async () => {
-      console.log("🔄 Disparando repo.getPokemons");
-      return repo.getPokemons(0, 20);
-    },
-  });
-
-  console.log("allPokemons:", allPokemons);
-
-  // Loading inicial
   if (isLoadingAll) {
     return (
       <View style={globalStyles.containerCenter}>
@@ -70,16 +35,13 @@ export default function PokemonListScreen() {
       </View>
     );
   }
-  if (isErrorAll || !allPokemons) {
+  if (isErrorAll || !displayData) {
     return (
       <View style={globalStyles.containerCenter}>
         <Text>Erro ao carregar Pokémons.</Text>
       </View>
     );
   }
-
-  // Dados a exibir
-  const displayData = search ? (searched ? [searched] : []) : allPokemons;
 
   return (
     <SafeAreaView style={styles.root}>
@@ -88,28 +50,22 @@ export default function PokemonListScreen() {
         keyExtractor={(item) => item.id.toString()}
         stickyHeaderIndices={[0]}
         showsVerticalScrollIndicator={false}
-        // Cabeçalho rolável com search + favoritos
         ListHeaderComponent={() => (
-          console.log("displayData:", displayData),
-          (
-            <View style={styles.header}>
-              <SearchBar value={search} onChangeText={setSearch} />
-              <Link href="/favorites" style={styles.favLink}>
-                <Text>Ver Favoritos</Text>
-              </Link>
-              {isSearching && (
-                <View style={styles.searchFeedback}>
-                  <ActivityIndicator size="small" />
-                  <Text style={styles.searchText}>Buscando...</Text>
-                </View>
-              )}
-              {isSearchError && search && (
-                <Text style={styles.searchErrorText}>
-                  Pokémon não encontrado
-                </Text>
-              )}
-            </View>
-          )
+          <View style={styles.header}>
+            <SearchBar value={search} onChangeText={setSearch} />
+            <Link href="/favorites" style={styles.favLink}>
+              <Text>Ver Favoritos</Text>
+            </Link>
+            {isSearching && (
+              <View style={styles.searchFeedback}>
+                <ActivityIndicator size="small" />
+                <Text style={styles.searchText}>Buscando...</Text>
+              </View>
+            )}
+            {isSearchError && search && (
+              <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
+            )}
+          </View>
         )}
         renderItem={({ item }) => {
           const isFav = favorites.some((f) => f.id === item.id);
@@ -117,15 +73,13 @@ export default function PokemonListScreen() {
             <PokemonCard
               pokemon={item}
               isFavorite={isFav}
-              onToggle={toggleMutation.mutate}
+              onToggle={toggleFavorite}
             />
           );
         }}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={styles.listContent}
-        onRefresh={() =>
-          queryClient.invalidateQueries({ queryKey: ["pokemons"] })
-        }
+        onRefresh={refetchAll}
         refreshing={isLoadingAll}
       />
     </SafeAreaView>
@@ -133,38 +87,38 @@ export default function PokemonListScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#fff" },
+  root: { flex: 1, backgroundColor: colors.background },
   header: {
-    backgroundColor: "#fff",
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 12,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
-    borderColor: "#eee",
+    borderColor: colors.border,
   },
   favLink: {
-    marginTop: 8,
-    paddingVertical: 10,
-    backgroundColor: "#ececec",
-    borderRadius: 6,
+    marginTop: spacing.sm,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm,
     textAlign: "center",
   },
   searchFeedback: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 6,
+    marginTop: spacing.xs,
   },
-  searchText: { marginLeft: 8 },
+  searchText: { marginLeft: spacing.sm },
   searchErrorText: {
-    marginTop: 6,
-    color: "#b00020",
+    marginTop: spacing.xs,
+    color: colors.error,
   },
   separator: {
     height: 1,
-    backgroundColor: "#f0f0f0",
-    marginHorizontal: 16,
+    backgroundColor: colors.surface,
+    marginHorizontal: spacing.lg,
   },
   listContent: {
-    paddingBottom: 32,
+    paddingBottom: spacing.xl,
   },
 });
