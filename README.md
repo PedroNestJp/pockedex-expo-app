@@ -32,6 +32,12 @@ Aplicativo mobile desenvolvido em React Native com Expo, que permite visualizar,
 
 ---
 
+## 🧠 Design feito no figma
+
+▶️ [Clique aqui para ver o design no figma](https://www.figma.com/design/ygxXxbzVov0mS3BQlwaFv5/Untitled?node-id=0-1&t=dCymtDfgUzldBy47-1)
+
+---
+
 ## 🧠 Arquitetura
 
 Aplicado **Clean Architecture**:
