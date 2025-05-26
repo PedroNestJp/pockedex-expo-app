@@ -15,6 +15,7 @@ import { SearchBar } from "../../src/components/SearchBar";
 import { PokemonCard } from "../../src/components/PokemonCard";
 import { usePokemonList } from "../../src/viewmodels/usePokemonList";
 import { spacing, colors, typography } from "../../src/theme";
+import { NearbyPokemons } from "../../src/components/NearbyPokemons";
 
 export default function PokemonListScreen() {
   const {
@@ -50,6 +51,7 @@ export default function PokemonListScreen() {
     <View style={styles.header}>
       <Image source={require("../../assets/logo.png")} style={styles.logo} />
       <SearchBar value={search} onChangeText={setSearch} />
+      <NearbyPokemons />
       {isSearching && (
         <View style={styles.searchFeedback}>
           <ActivityIndicator size="small" />
