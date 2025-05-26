@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "plugins": ["expo-router"],
     "splash": {
-      "image": "./assets/splash/pokedex-logo.png",
+      "image": "./assets/splash/img3.png",
       "resizeMode": "contain",
       "backgroundColor": "#F5F5F5"
     },

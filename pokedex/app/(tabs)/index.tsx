@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import { Link } from "expo-router";
 import { globalStyles } from "../../src/theme/styles";
@@ -82,11 +83,15 @@ export default function PokemonListScreen() {
           const isFav = favorites.some((f) => f.id === item.id);
           return (
             <View style={{ flex: 1 }}>
-              <PokemonCard
-                pokemon={item}
-                isFavorite={isFav}
-                onToggle={toggleFavorite}
-              />
+              <Link href={`/pokemon/${item.id}`} asChild>
+                <TouchableOpacity activeOpacity={0.9}>
+                  <PokemonCard
+                    pokemon={item}
+                    isFavorite={isFav}
+                    onToggle={toggleFavorite}
+                  />
+                </TouchableOpacity>
+              </Link>
             </View>
           );
         }}
