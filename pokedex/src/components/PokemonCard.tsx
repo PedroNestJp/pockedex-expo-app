@@ -1,9 +1,10 @@
-// src/components/PokemonCard.tsx
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import type { Pokemon } from "../domain/models/Pokemon";
 import { Link } from "expo-router";
+
+import { colors, spacing, typography } from "../theme";
 
 interface Props {
   pokemon: Pokemon;
@@ -21,7 +22,7 @@ export function PokemonCard({ pokemon, isFavorite, onToggle }: Props) {
           <Ionicons
             name={isFavorite ? "heart" : "heart-outline"}
             size={24}
-            color="green"
+            color={isFavorite ? colors.favorite : colors.primary}
           />
         </TouchableOpacity>
       </View>
@@ -33,20 +34,24 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
+    padding: spacing.md,
     borderBottomWidth: 1,
-    borderColor: "#DDD",
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
   image: {
     width: 56,
     height: 56,
-    marginRight: 12,
+    marginRight: spacing.md,
   },
   name: {
     flex: 1,
-    fontSize: 18,
-    fontWeight: "500",
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.medium,
     textTransform: "capitalize",
+    color: colors.text,
   },
-  icon: { padding: 8 },
+  icon: {
+    padding: spacing.sm,
+  },
 });
