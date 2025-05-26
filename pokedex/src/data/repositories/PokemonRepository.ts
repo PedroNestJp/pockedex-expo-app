@@ -1,3 +1,4 @@
+// src/data/repositories/FavoriteRepository.ts
 import { PokeApiDataSource } from "../datasources/PokeApiDataSource";
 import type { Pokemon } from "../../domain/models/Pokemon";
 import { PokemonDetails } from "../../domain/models/PokemonDetails";

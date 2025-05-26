@@ -1,5 +1,4 @@
 // src/services/types.ts
-// Arquivo de tipos para evitar dependências cíclicas e seguir DIP
 export interface Pokemon {
   id: number;
   name: string;
