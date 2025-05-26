@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   SafeAreaView,
+  Image,
 } from "react-native";
 import { Link } from "expo-router";
 import { globalStyles } from "../../src/theme/styles";
@@ -48,7 +49,7 @@ export default function PokemonListScreen() {
     <SafeAreaView style={styles.root}>
       <FlatList
         data={displayData}
-        key={"grid-2"} // ✅ CORRIGE O ERRO
+        key={"grid-2"}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
         showsVerticalScrollIndicator={false}
@@ -61,18 +62,11 @@ export default function PokemonListScreen() {
         }}
         ListHeaderComponent={() => (
           <View style={styles.header}>
+            <Image
+              source={require("../../assets/logo.png")}
+              style={styles.logo}
+            />
             <SearchBar value={search} onChangeText={setSearch} />
-            <View style={styles.linksWrapper}>
-              <Link href="/favorites" style={styles.linkBox}>
-                <Text style={styles.linkText}>Ver Favoritos</Text>
-              </Link>
-              <Link href="/boxes" style={styles.linkBox}>
-                <Text style={styles.linkText}>Ver Boxes</Text>
-              </Link>
-              <Link href="/boxes/create" style={styles.linkBox}>
-                <Text style={styles.linkText}>Criar Nova Box</Text>
-              </Link>
-            </View>
             {isSearching && (
               <View style={styles.searchFeedback}>
                 <ActivityIndicator size="small" />
@@ -143,5 +137,11 @@ const styles = StyleSheet.create({
   linkText: {
     color: colors.background,
     fontWeight: typography.fontWeight.bold,
+  },
+  logo: {
+    width: 150,
+    height: 50,
+    resizeMode: "contain",
+    alignSelf: "center",
   },
 });

@@ -8,13 +8,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "plugins": [
-      "expo-router"
-    ],
+    "plugins": ["expo-router"],
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash/pokedex-logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F5F5F5"
     },
     "ios": {
       "supportsTablet": true,
@@ -31,7 +29,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/img1.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,

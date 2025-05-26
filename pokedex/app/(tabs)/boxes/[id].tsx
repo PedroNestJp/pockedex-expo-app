@@ -1,4 +1,3 @@
-// app/[id].tsx
 import React from "react";
 import {
   View,
@@ -9,26 +8,17 @@ import {
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-
 import { PCBoxRepository } from "../../../src/data/repositories/PCBoxRepository";
 import { FavoriteRepository } from "../../../src/data/repositories/FavoriteRepository";
 import { PokemonCard } from "../../../src/components/PokemonCard";
 import { globalStyles } from "../../../src/theme/styles";
-import { spacing, typography } from "../../../src/theme";
+import { spacing, typography, colors } from "../../../src/theme";
 
 const boxRepo = new PCBoxRepository();
 const favRepo = new FavoriteRepository();
 
 export default function PCBoxScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  console.log("ID da Box:", id);
-  if (!id) {
-    return (
-      <View style={globalStyles.containerCenter}>
-        <Text>Box não encontrada.</Text>
-      </View>
-    );
-  }
 
   const {
     data: box,
@@ -67,32 +57,65 @@ export default function PCBoxScreen() {
 
   const pokemonsInBox = favorites.filter((p) => box.pokemons.includes(p.id));
 
+  const grouped = Object.entries(
+    pokemonsInBox.reduce((map, p) => {
+      p.types.forEach((type) => {
+        if (!map[type]) map[type] = [];
+        map[type].push(p);
+      });
+      return map;
+    }, {} as Record<string, typeof pokemonsInBox>)
+  ).map(([title, data]) => ({ title, data }));
+
   return (
-    <View style={{ flex: 1, paddingVertical: spacing.md }}>
+    <View style={styles.root}>
       <View style={styles.header}>
         <Text style={styles.title}>{box.name}</Text>
         <Text style={styles.subtitle}>Tipos: {box.types.join(", ")}</Text>
       </View>
 
-      {pokemonsInBox.length === 0 ? (
+      {grouped.length === 0 ? (
         <View style={globalStyles.containerCenter}>
           <Text>Nenhum Pokémon nesta Box.</Text>
         </View>
       ) : (
-        <FlatList
-          data={pokemonsInBox}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <PokemonCard pokemon={item} isFavorite={true} onToggle={() => {}} />
-          )}
-          contentContainerStyle={{ paddingBottom: spacing.lg }}
-        />
+        grouped.map((section) => (
+          <View key={section.title} style={styles.sectionWrapper}>
+            <Text style={styles.sectionTitle}>
+              {section.title.toUpperCase()}
+            </Text>
+            <FlatList
+              data={section.data}
+              keyExtractor={(item) => item.id.toString()}
+              numColumns={2}
+              key={`grid-${section.title}`}
+              renderItem={({ item }) => (
+                <View style={{ flex: 1 }}>
+                  <PokemonCard pokemon={item} isFavorite onToggle={() => {}} />
+                </View>
+              )}
+              columnWrapperStyle={{
+                gap: spacing.md,
+                marginBottom: spacing.md,
+              }}
+              contentContainerStyle={{
+                paddingHorizontal: spacing.lg,
+                paddingBottom: spacing.lg,
+              }}
+            />
+          </View>
+        ))
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: colors.background,
+    paddingTop: spacing.lg,
+  },
   header: {
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.md,
@@ -105,5 +128,16 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: typography.fontSize.md,
     marginTop: spacing.xs,
+    color: colors.textSecondary,
+  },
+  sectionWrapper: {
+    marginBottom: spacing.xl,
+  },
+  sectionTitle: {
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.textSecondary,
   },
 });
