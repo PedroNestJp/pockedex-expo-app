@@ -1,6 +1,6 @@
+// src/data/repositories/FavoriteRepository.ts
 import { FavoriteDataSource } from "../datasources/FavoriteDataSource";
 import type { Pokemon } from "../../domain/models/Pokemon";
-import { PokeApiDataSource } from "../datasources/PokeApiDataSource";
 import { PokemonRepository } from "./PokemonRepository";
 import { PokemonWithTypes } from "../../domain/models/PokemonWithTypes";
 

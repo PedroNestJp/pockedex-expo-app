@@ -1,3 +1,4 @@
+// src/domain/models/PokemonDetails.ts
 export interface PokemonDetails {
   id: number;
   name: string;

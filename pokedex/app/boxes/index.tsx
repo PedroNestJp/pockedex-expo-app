@@ -1,4 +1,4 @@
-// src/app/boxes/index.tsx
+// app/boxes/index.tsx
 import React from "react";
 import {
   View,
