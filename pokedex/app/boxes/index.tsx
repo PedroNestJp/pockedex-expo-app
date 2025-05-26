@@ -1,4 +1,4 @@
-// app/boxes/index.tsx
+// app/boxes/create.tsx
 import React from "react";
 import {
   View,
@@ -7,62 +7,82 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
-import { PokemonRepository } from "../../src/data/repositories/PokemonRepository";
-import { globalStyles } from "../../src/theme/styles";
+import { useQuery } from "@tanstack/react-query";
+import { PCBoxRepository } from "../../src/data/repositories/PCBoxRepository";
+import { spacing, colors, typography } from "../../src/theme";
 
-const repo = new PokemonRepository();
+const repo = new PCBoxRepository();
 
 export default function BoxesScreen() {
   const {
-    data: types = [],
+    data: boxes = [],
     isLoading,
     isError,
-  } = useQuery<string[], Error>({
-    queryKey: ["types"],
-    queryFn: () => repo.getTypes(),
+  } = useQuery({
+    queryKey: ["pcBoxes"],
+    queryFn: () => repo.getBoxes(),
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <View style={globalStyles.containerCenter}>
-        <Text>Carregando tipos…</Text>
+      <View style={styles.center}>
+        <Text>Carregando caixas…</Text>
       </View>
     );
-  if (isError)
+  }
+
+  if (isError) {
     return (
-      <View style={globalStyles.containerCenter}>
-        <Text>Erro ao carregar tipos.</Text>
+      <View style={styles.center}>
+        <Text>Erro ao carregar as boxes.</Text>
       </View>
     );
+  }
 
   return (
-    <FlatList
-      data={types}
-      keyExtractor={(item) => item}
-      contentContainerStyle={styles.list}
-      renderItem={({ item }) => (
-        <Link href={`/boxes/${item}`} asChild>
-          <TouchableOpacity style={styles.box}>
-            <Text style={styles.boxText}>{item.toUpperCase()}</Text>
-          </TouchableOpacity>
-        </Link>
-      )}
-    />
+    <View style={{ flex: 1 }}>
+      <Link href="/boxes/create" asChild>
+        <TouchableOpacity
+          style={[styles.box, { backgroundColor: colors.primary }]}
+        >
+          <Text style={[styles.boxText, { color: colors.background }]}>
+            + Nova Box
+          </Text>
+        </TouchableOpacity>
+      </Link>
+      <FlatList
+        data={boxes}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) => (
+          <Link href={`/boxes/${item.id}`} asChild>
+            <TouchableOpacity style={styles.box}>
+              <Text style={styles.boxText}>{item.name}</Text>
+            </TouchableOpacity>
+          </Link>
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { padding: 16 },
+  list: { padding: spacing.lg },
   box: {
-    padding: 12,
-    marginBottom: 8,
-    backgroundColor: "#EEE",
-    borderRadius: 6,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: spacing.sm,
   },
   boxText: {
     textAlign: "center",
-    fontWeight: "600",
+    fontWeight: typography.fontWeight.medium,
+    fontSize: typography.fontSize.md,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

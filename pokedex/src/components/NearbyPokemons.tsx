@@ -6,7 +6,9 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
+import { Link } from "expo-router";
 
 import { useNearbyPokemons } from "../hooks/useNearbyPokemons";
 import { PokemonCard } from "./PokemonCard";
@@ -16,6 +18,13 @@ export function NearbyPokemons({ count = 3 }: { count?: number }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pokémons por perto</Text>
+
+      {/* link para a tela de boxes */}
+      <Link href="/boxes" asChild>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Ver boxes</Text>
+        </TouchableOpacity>
+      </Link>
 
       {isFetching && (
         <View style={styles.loadingContainer}>
@@ -79,6 +88,17 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     alignItems: "center",
-    padding: 12,
+  },
+  button: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });

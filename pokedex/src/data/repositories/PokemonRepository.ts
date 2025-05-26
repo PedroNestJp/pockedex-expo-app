@@ -2,6 +2,7 @@
 import { PokeApiDataSource } from "../datasources/PokeApiDataSource";
 import type { Pokemon } from "../../domain/models/Pokemon";
 import { PokemonDetails } from "../../domain/models/PokemonDetails";
+import axios from "axios";
 
 export class PokemonRepository {
   private api = new PokeApiDataSource();
@@ -33,7 +34,7 @@ export class PokemonRepository {
   }
 
   async getTypes(): Promise<string[]> {
-    const types = await this.api.fetchTypes();
-    return types.map((t) => t.name);
+    const res = await axios.get("https://pokeapi.co/api/v2/type");
+    return res.data.results.map((type: { name: string }) => type.name);
   }
 }
