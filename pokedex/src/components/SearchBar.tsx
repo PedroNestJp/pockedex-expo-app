@@ -1,6 +1,6 @@
-// src/components/SearchBar.tsx
 import React from "react";
 import { View, TextInput, StyleSheet } from "react-native";
+import { colors, spacing, typography } from "../theme";
 
 interface Props {
   value: string;
@@ -15,6 +15,7 @@ export function SearchBar({ value, onChangeText }: Props) {
         value={value}
         onChangeText={onChangeText}
         style={styles.input}
+        placeholderTextColor={colors.border}
         autoCapitalize="none"
         autoCorrect={false}
       />
@@ -24,14 +25,16 @@ export function SearchBar({ value, onChangeText }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
-    backgroundColor: "#FFF",
+    padding: spacing.sm,
+    backgroundColor: colors.background,
   },
   input: {
     height: 40,
     borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 8,
-    paddingHorizontal: 12,
+    borderColor: colors.border,
+    borderRadius: spacing.sm,
+    paddingHorizontal: spacing.md,
+    fontSize: typography.fontSize.md,
+    color: colors.text,
   },
 });
