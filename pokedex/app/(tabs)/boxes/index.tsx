@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     padding: spacing.md,
     marginBottom: spacing.sm,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.cardBackground,
     borderRadius: spacing.sm,
   },
   boxText: {
