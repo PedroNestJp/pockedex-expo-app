@@ -19,15 +19,34 @@ export function NotificationsProvider({
   notificationService: NotificationService;
 }) {
   useEffect(() => {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldPlaySound: true,
-        shouldShowBanner: true,
-        shouldShowList: true,
-        shouldSetBadge: false,
-      }),
-    });
+    async function setup() {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== "granted") {
+        console.warn("Permissão de notificação negada");
+      }
+
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldPlaySound: true,
+          shouldSetBadge: false,
+          shouldShowBanner: true,
+          shouldShowList: true,
+        }),
+      });
+    }
+
+    setup();
   }, []);
+
+  // useEffect(() => {
+  //   Notifications.scheduleNotificationAsync({
+  //     content: {
+  //       title: "Notificação de teste",
+  //       body: "Starmie apareceu por perto!",
+  //     },
+  //     trigger: null,
+  //   });
+  // }, []);
 
   const notifyNearby = async (names: string[]) => {
     const title = "Pokémons por perto!";
