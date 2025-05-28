@@ -1,19 +1,23 @@
 import { PCBoxRepository } from "../../data/repositories/PCBoxRepository";
 
 describe("PCBoxRepository", () => {
-  const repo = new PCBoxRepository();
+  let repo: PCBoxRepository;
 
-  it("deve criar uma nova box com tipos definidos", async () => {
+  beforeEach(() => {
+    repo = new PCBoxRepository();
+  });
+
+  it("should create a new box with defined types", async () => {
     const name = "Elétricos";
     const types = ["electric"];
 
-    const created = await repo.addBox(name, types);
+    const createdBox = await repo.addBox(name, types);
     const boxes = await repo.getBoxes();
 
+    expect(createdBox).toEqual(expect.objectContaining({ name, types }));
+
     expect(boxes).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ name: "Elétricos", types: ["electric"] }),
-      ])
+      expect.arrayContaining([expect.objectContaining({ name, types })])
     );
   });
 });
