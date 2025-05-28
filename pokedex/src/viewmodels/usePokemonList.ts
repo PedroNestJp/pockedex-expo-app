@@ -40,7 +40,7 @@ export function usePokemonList() {
     isError: isErrorAll,
   } = useQuery<Pokemon[], Error>({
     queryKey: ["pokemons"],
-    queryFn: () => pokemonRepo.getPokemons(0, 20),
+    queryFn: () => pokemonRepo.getPokemons(0, 151),
   });
 
   const displayData = search ? (searched ? [searched] : []) : allPokemons;
