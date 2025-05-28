@@ -16,6 +16,9 @@ import { PokemonCard } from "../../src/components/PokemonCard";
 import { usePokemonList } from "../../src/viewmodels/usePokemonList";
 import { spacing, colors, typography } from "../../src/theme";
 import { NearbyPokemons } from "../../src/components/NearbyPokemons";
+import { useEffect } from "react";
+import { useToast } from "../../src/context/ToastContext";
+
 
 export default function PokemonListScreen() {
   const {
@@ -58,10 +61,13 @@ export default function PokemonListScreen() {
           <Text style={styles.searchText}>Buscando...</Text>
         </View>
       )}
-      {isSearchError && search && (
-        <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
-      )}
     </View>
+
+useEffect(() => {
+  if (isSearchError && search) {
+    showToast("Pokémon não encontrado");
+  }
+}, [isSearchError, search]);
   );
 
   return (

@@ -16,6 +16,7 @@ import { PCBoxRepository } from "../../../src/data/repositories/PCBoxRepository"
 import type { PokemonDetails } from "../../../src/domain/models/PokemonDetails";
 import { spacing, typography, colors } from "../../../src/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useToast } from "../../../src/context/ToastContext";
 
 const repo = new PokemonRepository();
 const boxRepo = new PCBoxRepository();
@@ -23,6 +24,7 @@ const boxRepo = new PCBoxRepository();
 export default function PokemonDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { showToast } = useToast();
 
   const { data, isLoading, isError } = useQuery<PokemonDetails>({
     queryKey: ["pokemon", id],
@@ -51,7 +53,7 @@ export default function PokemonDetailsScreen() {
 
   function handleAddToBox() {
     if (boxes.length === 0) {
-      Alert.alert("Você ainda não criou nenhuma Box.");
+      showToast("Você ainda não criou nenhuma Box.");
       return;
     }
 
@@ -62,7 +64,7 @@ export default function PokemonDetailsScreen() {
         text: box.name,
         onPress: async () => {
           await boxRepo.togglePokemon(box.id, data!.id);
-          Alert.alert("Sucesso", `Pokémon adicionado à box "${box.name}"`);
+          showToast(`Adicionado à Box "${box.name}"`);
         },
       }))
     );
