@@ -5,18 +5,21 @@ import { Stack } from "expo-router";
 
 const queryClient = new QueryClient();
 const notificationService = new ExpoNotificationService();
+import { ToastProvider } from "../src/context/ToastContext";
 
 export default function RootLayout() {
   const isFirstLaunch = true;
 
   return (
-    <NotificationsProvider notificationService={notificationService}>
-      <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="splash" />
-          <Stack.Screen name="(tabs)" />
-        </Stack>
-      </QueryClientProvider>
-    </NotificationsProvider>
+    <ToastProvider>
+      <NotificationsProvider notificationService={notificationService}>
+        <QueryClientProvider client={queryClient}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="splash" />
+            <Stack.Screen name="(tabs)" />
+          </Stack>
+        </QueryClientProvider>
+      </NotificationsProvider>
+    </ToastProvider>
   );
 }
