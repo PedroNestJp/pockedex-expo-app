@@ -72,7 +72,7 @@ npm test
 ## 📦 Instalação
 
 ```bash
-git clone https://github.com/PedroNestJp/pokedex-app.git
+git clone [https://github.com/PedroNestJp/pockedex-expo-app.git]
 cd pokedex-app
 npm install
 npx expo start
