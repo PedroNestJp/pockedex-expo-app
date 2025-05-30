@@ -73,7 +73,7 @@ npm test
 
 ```bash
 git clone https://github.com/PedroNestJp/pockedex-expo-app.git
-cd pockedex-expo-app
+cd pockedex-expo-app/pokedex
 npm install
 npx expo start
 ```
