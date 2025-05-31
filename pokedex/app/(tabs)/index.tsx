@@ -19,7 +19,6 @@ import { NearbyPokemons } from "../../src/components/NearbyPokemons";
 import { useEffect } from "react";
 import { useToast } from "../../src/context/ToastContext";
 
-
 export default function PokemonListScreen() {
   const {
     search,
@@ -33,6 +32,8 @@ export default function PokemonListScreen() {
     toggleFavorite,
     refetchAll,
   } = usePokemonList();
+
+  const { showToast } = useToast();
 
   if (isLoadingAll) {
     return (
@@ -62,13 +63,13 @@ export default function PokemonListScreen() {
         </View>
       )}
     </View>
-
-useEffect(() => {
-  if (isSearchError && search) {
-    showToast("Pokémon não encontrado");
-  }
-}, [isSearchError, search]);
   );
+
+  useEffect(() => {
+    if (isSearchError && search) {
+      showToast("Pokémon não encontrado");
+    }
+  }, [isSearchError, search]);
 
   return (
     <SafeAreaView style={styles.root}>
