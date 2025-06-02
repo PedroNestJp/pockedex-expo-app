@@ -55,9 +55,7 @@ export default function BoxesScreen() {
       contentContainerStyle={styles.list}
       ListHeaderComponent={() => (
         <Link href="/boxes/create" asChild>
-          <TouchableOpacity
-            style={[styles.box, { backgroundColor: colors.primary }]}
-          >
+          <TouchableOpacity style={styles.box}>
             <Text style={[styles.boxText, { color: colors.background }]}>
               + Nova Box
             </Text>
@@ -80,14 +78,13 @@ const styles = StyleSheet.create({
   box: {
     padding: spacing.md,
     marginBottom: spacing.sm,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.primary,
     borderRadius: spacing.sm,
   },
   boxText: {
     textAlign: "center",
     fontWeight: typography.fontWeight.medium,
     fontSize: typography.fontSize.md,
-    backgroundColor: colors.lavender,
     borderRadius: spacing.sm,
     padding: spacing.sm,
   },
