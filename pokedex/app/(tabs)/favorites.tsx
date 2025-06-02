@@ -68,6 +68,14 @@ export default function FavoritesScreen() {
           paddingHorizontal: spacing.lg,
           paddingBottom: spacing.xl,
         }}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        getItemLayout={(_, index) => ({
+          length: 160,
+          offset: 160 * index,
+          index,
+        })}
       />
     </SafeAreaView>
   );
