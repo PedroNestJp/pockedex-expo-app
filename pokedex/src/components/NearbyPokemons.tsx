@@ -6,9 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
-  TouchableOpacity,
 } from "react-native";
-import { Link } from "expo-router";
 
 import { useNearbyPokemons } from "../hooks/useNearbyPokemons";
 import { NearbyPokemonCard } from "./NearbyPokemonCard";
@@ -40,7 +38,7 @@ export function NearbyPokemons({ count = 3 }: { count?: number }) {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <NearbyPokemonCard pokemon={item} />}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 12 }}
+          contentContainerStyle={styles.container}
         />
       )}
     </View>

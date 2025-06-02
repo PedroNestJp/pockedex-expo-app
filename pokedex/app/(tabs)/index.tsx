@@ -70,54 +70,48 @@ export default function PokemonListScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <FlatList
-          data={displayData}
-          key={"grid-2"}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          stickyHeaderIndices={[0]}
-          columnWrapperStyle={{ gap: spacing.md, marginBottom: spacing.md }}
-          contentContainerStyle={{
-            paddingHorizontal: spacing.lg,
-            paddingBottom: spacing.xl,
-            gap: spacing.md,
-          }}
-          ListHeaderComponent={HeaderComponent}
-          ListEmptyComponent={
-            <View style={globalStyles.containerCenter}>
-              <Text>Nenhum Pokémon encontrado.</Text>
+      <FlatList
+        data={displayData}
+        key={"grid-2"}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={[0]}
+        columnWrapperStyle={{ gap: spacing.md, marginBottom: spacing.md }}
+        contentContainerStyle={styles.container}
+        ListHeaderComponent={HeaderComponent}
+        ListEmptyComponent={
+          <View style={globalStyles.containerCenter}>
+            <Text>Nenhum Pokémon encontrado.</Text>
+          </View>
+        }
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        getItemLayout={(_, index) => ({
+          length: 160, // Altura estimada de uma linha com 2 cards (ajustável conforme seu design)
+          offset: 160 * index,
+          index,
+        })}
+        renderItem={({ item }) => {
+          const isFav = favorites.some((f) => f.id === item.id);
+          return (
+            <View style={{ flex: 1 }}>
+              <Link href={`/pokemon/${item.id}`} asChild>
+                <TouchableOpacity activeOpacity={0.9}>
+                  <PokemonCard
+                    pokemon={item}
+                    isFavorite={isFav}
+                    onToggle={toggleFavorite}
+                  />
+                </TouchableOpacity>
+              </Link>
             </View>
-          }
-          initialNumToRender={10}
-          maxToRenderPerBatch={10}
-          windowSize={5}
-          getItemLayout={(_, index) => ({
-            length: 160, // Altura estimada de uma linha com 2 cards (ajustável conforme seu design)
-            offset: 160 * index,
-            index,
-          })}
-          renderItem={({ item }) => {
-            const isFav = favorites.some((f) => f.id === item.id);
-            return (
-              <View style={{ flex: 1 }}>
-                <Link href={`/pokemon/${item.id}`} asChild>
-                  <TouchableOpacity activeOpacity={0.9}>
-                    <PokemonCard
-                      pokemon={item}
-                      isFavorite={isFav}
-                      onToggle={toggleFavorite}
-                    />
-                  </TouchableOpacity>
-                </Link>
-              </View>
-            );
-          }}
-          onRefresh={refetchAll}
-          refreshing={isLoadingAll}
-        />
-      </ScrollView>
+          );
+        }}
+        onRefresh={refetchAll}
+        refreshing={isLoadingAll}
+      />
     </SafeAreaView>
   );
 }
@@ -128,11 +122,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   container: {
-    padding: spacing.lg,
+    paddingTop: spacing.xl,
+    paddingHorizontal: spacing.md,
+    paddingRight: spacing.xl,
   },
   header: {
     backgroundColor: colors.background,
-    paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
     borderBottomWidth: 1,
