@@ -1,3 +1,4 @@
+// app/(tabs)/pokemon/[id].tsx
 import React from "react";
 import {
   View,
@@ -8,6 +9,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  SafeAreaView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +18,7 @@ import { PCBoxRepository } from "../../../src/data/repositories/PCBoxRepository"
 import type { PokemonDetails } from "../../../src/domain/models/PokemonDetails";
 import { spacing, typography, colors } from "../../../src/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useToast } from "../../../src/context/ToastContext";
 
 const repo = new PokemonRepository();
 const boxRepo = new PCBoxRepository();
@@ -23,6 +26,7 @@ const boxRepo = new PCBoxRepository();
 export default function PokemonDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const toast = useToast();
 
   const { data, isLoading, isError } = useQuery<PokemonDetails>({
     queryKey: ["pokemon", id],
@@ -62,92 +66,99 @@ export default function PokemonDetailsScreen() {
         text: box.name,
         onPress: async () => {
           await boxRepo.togglePokemon(box.id, data!.id);
-          Alert.alert("Sucesso", `Pokémon adicionado à box "${box.name}"`);
+          toast.showToast(`Adicionado à box "${box.name}" com sucesso.`);
         },
       }))
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.topBar}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.topBar}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
+            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
+          </TouchableOpacity>
+
+          <Image
+            source={require("../../../assets/splash/img3.png")}
+            style={styles.logo}
+          />
+        </View>
+
+        <Text style={styles.name}>
+          {data.name} #{data.id}
+        </Text>
 
         <Image
-          source={require("../../../assets/splash/img3.png")}
-          style={styles.logo}
+          source={{
+            uri:
+              data.sprites.other["official-artwork"].front_default ||
+              data.sprites.front_default,
+          }}
+          style={styles.image}
+          resizeMode="contain"
         />
-      </View>
 
-      <Text style={styles.name}>
-        {data.name} #{data.id}
-      </Text>
-
-      <Image
-        source={{
-          uri:
-            data.sprites.other["official-artwork"].front_default ||
-            data.sprites.front_default,
-        }}
-        style={styles.image}
-        resizeMode="contain"
-      />
-
-      {/* Atributos */}
-      <View style={styles.attributes}>
-        <View style={styles.attrBlock}>
-          <Text style={styles.label}>Altura:</Text>
-          <Text>{(data.height / 10).toFixed(1)}m</Text>
-        </View>
-        <View style={styles.attrBlock}>
-          <Text style={styles.label}>Categoria:</Text>
-          <Text>{data.species.name}</Text>
-        </View>
-        <View style={styles.attrBlock}>
-          <Text style={styles.label}>Peso:</Text>
-          <Text>{(data.weight / 10).toFixed(1)}kg</Text>
-        </View>
-        <View style={styles.attrBlock}>
-          <Text style={styles.label}>Habilidades:</Text>
-          <Text>{data.abilities.map((a) => a.ability.name).join(", ")}</Text>
-        </View>
-      </View>
-
-      {/* Tipo */}
-      <Text style={styles.label}>Tipo:</Text>
-      <View style={styles.typeWrapper}>
-        {data.types.map((t) => (
-          <View key={t.type.name} style={styles.typeTag}>
-            <Text style={styles.typeText}>{t.type.name}</Text>
+        {/* Atributos */}
+        <View style={styles.attributes}>
+          <View style={styles.attrBlock}>
+            <Text style={styles.label}>Altura:</Text>
+            <Text>{(data.height / 10).toFixed(1)}m</Text>
           </View>
-        ))}
-      </View>
+          <View style={styles.attrBlock}>
+            <Text style={styles.label}>Categoria:</Text>
+            <Text>{data.species.name}</Text>
+          </View>
+          <View style={styles.attrBlock}>
+            <Text style={styles.label}>Peso:</Text>
+            <Text>{(data.weight / 10).toFixed(1)}kg</Text>
+          </View>
+          <View style={styles.attrBlock}>
+            <Text style={styles.label}>Habilidades:</Text>
+            <Text>{data.abilities.map((a) => a.ability.name).join(", ")}</Text>
+          </View>
+        </View>
 
-      {/* Estatísticas */}
-      <Text style={styles.label}>Estatísticas</Text>
-      <View style={styles.statsContainer}>
-        {data.stats.map((s) => (
-          <View key={s.stat.name} style={styles.statRow}>
-            <Text style={styles.statLabel}>{formatStatName(s.stat.name)}</Text>
-            <View style={styles.barWrapper}>
-              <View
-                style={[styles.bar, { width: `${(s.base_stat / 150) * 100}%` }]}
-              />
+        {/* Tipo */}
+        <Text style={styles.label}>Tipo:</Text>
+        <View style={styles.typeWrapper}>
+          {data.types.map((t) => (
+            <View key={t.type.name} style={styles.typeTag}>
+              <Text style={styles.typeText}>{t.type.name}</Text>
             </View>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
 
-      {/* Botão */}
-      <TouchableOpacity style={styles.button} onPress={handleAddToBox}>
-        <Text style={styles.buttonText}>Adicionar à Box</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Estatísticas */}
+        <Text style={styles.label}>Estatísticas</Text>
+        <View style={styles.statsContainer}>
+          {data.stats.map((s) => (
+            <View key={s.stat.name} style={styles.statRow}>
+              <Text style={styles.statLabel}>
+                {formatStatName(s.stat.name)}
+              </Text>
+              <View style={styles.barWrapper}>
+                <View
+                  style={[
+                    styles.bar,
+                    { width: `${(s.base_stat / 150) * 100}%` },
+                  ]}
+                />
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* Botão */}
+        <TouchableOpacity style={styles.button} onPress={handleAddToBox}>
+          <Text style={styles.buttonText}>Adicionar à Box</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

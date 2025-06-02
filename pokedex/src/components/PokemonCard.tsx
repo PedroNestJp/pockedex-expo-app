@@ -54,7 +54,7 @@ export const PokemonCard: React.FC<Props> = React.memo(function Card({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFF9F2",
+    backgroundColor: colors.cardBackground,
     borderRadius: 16,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.sm,
@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   image: {
-    width: 100,
-    height: 120,
+    width: "100%",
+    height: 100,
     resizeMode: "contain",
     marginBottom: spacing.sm,
   },
