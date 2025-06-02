@@ -1,3 +1,4 @@
+// app/(tabs)/boxes/[id].tsx
 import React from "react";
 import {
   View,
@@ -102,6 +103,14 @@ export default function PCBoxScreen() {
                 paddingHorizontal: spacing.lg,
                 paddingBottom: spacing.lg,
               }}
+              initialNumToRender={10}
+              maxToRenderPerBatch={10}
+              windowSize={5}
+              getItemLayout={(_, index) => ({
+                length: 160,
+                offset: 160 * index,
+                index,
+              })}
             />
           </View>
         ))

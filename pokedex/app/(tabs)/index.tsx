@@ -1,3 +1,4 @@
+// app/(tabs)/pokemon/index.tsx
 import React from "react";
 import {
   View,
@@ -8,6 +9,7 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { Link } from "expo-router";
 import { globalStyles } from "../../src/theme/styles";
@@ -48,24 +50,26 @@ export default function PokemonListScreen() {
   }
 
   const HeaderComponent = (
-    <View style={styles.header}>
-      <Image source={require("../../assets/logo.png")} style={styles.logo} />
-      <SearchBar value={search} onChangeText={setSearch} />
-      <NearbyPokemons />
-      {isSearching && (
-        <View style={styles.searchFeedback}>
-          <ActivityIndicator size="small" />
-          <Text style={styles.searchText}>Buscando...</Text>
-        </View>
-      )}
-      {isSearchError && search && (
-        <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
-      )}
-    </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={styles.header}>
+        <Image source={require("../../assets/logo.png")} style={styles.logo} />
+        <SearchBar value={search} onChangeText={setSearch} />
+        <NearbyPokemons />
+        {isSearching && (
+          <View style={styles.searchFeedback}>
+            <ActivityIndicator size="small" />
+            <Text style={styles.searchText}>Buscando...</Text>
+          </View>
+        )}
+        {isSearchError && search && (
+          <Text style={styles.searchErrorText}>Pokémon não encontrado</Text>
+        )}
+      </View>
+    </SafeAreaView>
   );
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <FlatList
         data={displayData}
         key={"grid-2"}
@@ -74,12 +78,21 @@ export default function PokemonListScreen() {
         showsVerticalScrollIndicator={false}
         stickyHeaderIndices={[0]}
         columnWrapperStyle={{ gap: spacing.md, marginBottom: spacing.md }}
-        contentContainerStyle={{
-          paddingHorizontal: spacing.lg,
-          paddingBottom: spacing.xl,
-          gap: spacing.md,
-        }}
+        contentContainerStyle={styles.container}
         ListHeaderComponent={HeaderComponent}
+        ListEmptyComponent={
+          <View style={globalStyles.containerCenter}>
+            <Text>Nenhum Pokémon encontrado.</Text>
+          </View>
+        }
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        getItemLayout={(_, index) => ({
+          length: 160, // Altura estimada de uma linha com 2 cards (ajustável conforme seu design)
+          offset: 160 * index,
+          index,
+        })}
         renderItem={({ item }) => {
           const isFav = favorites.some((f) => f.id === item.id);
           return (
@@ -108,9 +121,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  container: {
+    paddingTop: spacing.xl,
+    paddingHorizontal: spacing.md,
+    paddingRight: spacing.xl,
+  },
   header: {
     backgroundColor: colors.background,
-    paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
     borderBottomWidth: 1,
