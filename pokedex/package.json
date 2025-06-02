@@ -9,8 +9,10 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eas:build": "eas build",
-    "preview:build:ios": "eas build --profile development --platform ios",
-    "preview:build:android": "eas build --profile development --platform android",
+    "build:dev:android": "eas build --platform android --profile development",
+    "build:dev:ios": "eas build --platform ios --profile development",
+    "build:prod:android": "eas build --platform android --profile production",
+    "build:prod:ios": "eas build --platform ios --profile production",
     "eas:update": "eas update"
   },
   "dependencies": {
