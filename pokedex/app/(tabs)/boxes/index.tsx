@@ -62,6 +62,11 @@ export default function BoxesScreen() {
           </TouchableOpacity>
         </Link>
       )}
+      ListEmptyComponent={
+        <View style={styles.center}>
+          <Text>Nenhuma Box criada ainda.</Text>
+        </View>
+      }
       renderItem={({ item }) => (
         <Link href={`/boxes/${item.id}`} asChild>
           <TouchableOpacity style={styles.box}>
@@ -69,6 +74,14 @@ export default function BoxesScreen() {
           </TouchableOpacity>
         </Link>
       )}
+      initialNumToRender={10}
+      maxToRenderPerBatch={10}
+      windowSize={5}
+      getItemLayout={(_, index) => ({
+        length: 72, // altura estimada de cada box
+        offset: 72 * index,
+        index,
+      })}
     />
   );
 }
