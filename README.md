@@ -1,6 +1,6 @@
 # 📱 Pokedéx App
 
-Aplicativo mobile desenvolvido em React Native com Expo, que permite visualizar, buscar, favoritar e organizar Pokémons em Boxes personalizadas. Notificacoes aparecem no topo da tela quando Pokémons aparecem por perto.
+Aplicativo mobile desenvolvido com **React Native + Expo**, que permite visualizar, buscar, favoritar e organizar Pokémons em Boxes personalizadas. Notificações são exibidas no topo da tela quando Pokémons aparecem por perto.
 
 ---
 
@@ -10,49 +10,58 @@ Aplicativo mobile desenvolvido em React Native com Expo, que permite visualizar,
 * ❤️ Favoritar Pokémons
 * 📦 Criar Boxes com tipos definidos
 * ➕ Adicionar/remover Pokémons nas Boxes
-* 📍 Seção de Pokémons por perto (com notificação)
-* 🔔 Notificações locais usando `expo-notifications`
-* 💾 Persistência com `AsyncStorage`
+* 📍 Exibir Pokémons por perto (com notificação local)
+* 🔔 Notificações usando `expo-notifications`
+* 📎 Armazenamento local com `AsyncStorage`
 * 🌐 Imagens oficiais em alta resolução
-* 🧼 UI seguindo design do Figma (modo grid responsivo)
+* 🧼 UI responsiva seguindo design do Figma
+
+---
+
+## ⚙️ Otimizações implementadas
+
+* ♻️ `FlatList` com `getItemLayout`, `initialNumToRender` e `windowSize` para listas grandes
+* 📦 Reutilização de `ToastContext` para feedback leve e elegante
+* 📱 Uso consistente de `SafeAreaView` para compatibilidade com dispositivos com notch
+* 💡 Separação de lógica em `viewmodels` (hooks) seguindo padrão MVVM
 
 ---
 
 ## ▶️ Demonstração em vídeo
 
-▶️ [Clique aqui para assistir à demonstração do app](https://drive.google.com/file/d/1_Y0pZ5-uMihz4wquIFKFCrK0kgTxEaEM/view?usp=sharing)
+🎥 [Clique aqui para assistir à demonstração do app](https://drive.google.com/file/d/1_Y0pZ5-uMihz4wquIFKFCrK0kgTxEaEM/view?usp=sharing)
 
 ---
 
 ## 📸 Screenshots
 
-| Tela Inicial                | Detalhes                    | Favoritos                   | Boxes                       |  Add PC box                                   |
-| --------------------------- | --------------------------- | --------------------------- | --------------------------- | ----------------------------------- |
-| ![](pokedex/docs/tela-inicial.png) | ![](pokedex/docs/detalhes.png) | ![](pokedex/docs/favoritos.png) | ![](pokedex/docs/pc-box.png) | ![](pokedex/docs/botao-add-box.png) |                           |
+| Tela Inicial                       | Detalhes                       | Favoritos                       | Boxes                        | Adicionar Box                       |
+| ---------------------------------- | ------------------------------ | ------------------------------- | ---------------------------- | ----------------------------------- |
+| ![](pokedex/docs/tela-inicial.png) | ![](pokedex/docs/detalhes.png) | ![](pokedex/docs/favoritos.png) | ![](pokedex/docs/pc-box.png) | ![](pokedex/docs/botao-add-box.png) |
 
 ---
 
-## 🧠 Design feito no figma
+## 🎨 Design no Figma
 
-▶️ [Clique aqui para ver o design no figma](https://www.figma.com/design/ygxXxbzVov0mS3BQlwaFv5/Untitled?node-id=0-1&t=dCymtDfgUzldBy47-1)
+🖌️ [Ver layout no Figma](https://www.figma.com/design/ygxXxbzVov0mS3BQlwaFv5/Untitled?node-id=0-1&t=dCymtDfgUzldBy47-1)
 
 ---
 
 ## 🧠 Arquitetura
 
-Aplicado **Clean Architecture**:
+Estruturado com **Clean Architecture**:
 
 ```
 src/
 ├── components/       # Componentes visuais reutilizáveis
-├── context/          # Context API e serviços globais
+├── context/          # Context API e serviços globais (Toast, Notifications)
 ├── data/             # Repositórios e fontes de dados
 │   ├── datasources/
 │   └── repositories/
 ├── domain/           # Modelos e tipos do domínio
 ├── services/         # Serviços externos (notificações)
 ├── theme/            # Estilos, tokens, espaçamentos
-├── viewmodels/       # Lógica de tela (hooks)
+└── viewmodels/       # Lógica de tela e hooks (MVVM)
 ```
 
 ---
@@ -65,11 +74,11 @@ npm test
 
 * ✅ `FavoriteRepository.test.ts`
 * ✅ `PCBoxRepository.test.ts`
-* ⏳ Testes adicionais podem ser implementados com `@testing-library/react-native` e `jest-expo`.
+* ⏳ Cobertura de tela com `@testing-library/react-native` pode ser expandida
 
 ---
 
-## 📦 Instalação
+## 📦 Instalação e execução
 
 ```bash
 git clone https://github.com/PedroNestJp/pockedex-expo-app.git
@@ -82,25 +91,25 @@ npx expo start
 
 ---
 
-## 📱 Tecnologias
+## 🛠️ Tecnologias utilizadas
 
-* React Native (com Expo SDK)
+* Expo SDK + React Native
 * TypeScript
+* React Query
+* Expo Router
 * AsyncStorage
 * Expo Notifications
-* React Query
-* React Navigation (expo-router)
-* @testing-library + Jest
+* @testing-library/react-native + Jest
 
 ---
 
 ## 📄 Licença
 
-Este projeto é apenas para fins de demonstração técnica.
+Projeto desenvolvido apenas para fins de demonstração técnica.
 
 ---
 
 ## ✨ Autor
 
 Desenvolvido por **Pedro Silva** 💻
-[LinkedIn](https://www.linkedin.com/in/pedronest)
+🔗 [LinkedIn](https://www.linkedin.com/in/pedronest)
