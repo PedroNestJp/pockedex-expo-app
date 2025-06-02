@@ -1,4 +1,4 @@
-import React from "react";
+import React, { JSX } from "react";
 import {
   View,
   Text,
@@ -17,7 +17,11 @@ interface Props {
   onToggle: (p: Pokemon) => void;
 }
 
-export function PokemonCard({ pokemon, isFavorite, onToggle }: Props) {
+export const PokemonCard: React.FC<Props> = React.memo(function Card({
+  pokemon,
+  isFavorite,
+  onToggle,
+}: Props): JSX.Element {
   const imageSource =
     pokemon.image ||
     `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
@@ -46,7 +50,7 @@ export function PokemonCard({ pokemon, isFavorite, onToggle }: Props) {
       </Text>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {

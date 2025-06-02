@@ -80,6 +80,19 @@ export default function PokemonListScreen() {
           gap: spacing.md,
         }}
         ListHeaderComponent={HeaderComponent}
+        ListEmptyComponent={
+          <View style={globalStyles.containerCenter}>
+            <Text>Nenhum Pokémon encontrado.</Text>
+          </View>
+        }
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        getItemLayout={(_, index) => ({
+          length: 160, // Altura estimada de uma linha com 2 cards (ajustável conforme seu design)
+          offset: 160 * index,
+          index,
+        })}
         renderItem={({ item }) => {
           const isFav = favorites.some((f) => f.id === item.id);
           return (
